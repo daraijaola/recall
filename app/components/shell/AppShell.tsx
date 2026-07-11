@@ -49,6 +49,9 @@ export function AppShell({ children, health }: AppShellProps) {
           <span className="live-badge" title="Running on your machine">
             {health?.smConnected === false ? "Offline" : "Local"}
           </span>
+          <a href={LANDING_URL} className="nav-link about-link" title="About RECALL">
+            About
+          </a>
         </div>
       </header>
 

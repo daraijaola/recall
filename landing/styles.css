@@ -122,6 +122,18 @@ code {
 
 .site-nav a:hover { color: var(--white); }
 
+.top-bar-end {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--unit) * 2);
+}
+
+.btn-nav {
+  min-height: calc(var(--unit) * 4);
+  padding: 0 calc(var(--unit) * 2);
+  text-decoration: none;
+}
+
 .local-badge {
   display: inline-flex;
   align-items: center;
@@ -619,6 +631,24 @@ code {
   width: min(280px, 85%);
   padding: calc(var(--unit) * 4) calc(var(--unit) * 3);
   border: 1px dashed var(--line-strong);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.drop-zone-link:hover {
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.panel-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--unit) * 2);
+  margin-top: calc(var(--unit) * 4);
+}
+
+.panel-cta .btn {
+  text-decoration: none;
 }
 
 .drop-pellet {
@@ -898,9 +928,15 @@ code {
   padding: calc(var(--unit) * 3);
   border: 1px solid var(--line);
   transition: border-color 120ms steps(2);
+  color: inherit;
+  text-decoration: none;
 }
 
 .inject-row:hover { border-color: var(--line-strong); }
+
+a.inject-row-link {
+  cursor: pointer;
+}
 
 .inject-num {
   font-family: var(--mono);
@@ -972,6 +1008,27 @@ code {
   margin-top: calc(var(--unit) * 5);
 }
 
+.cta-actions .btn {
+  text-decoration: none;
+}
+
+.cta-secondary {
+  margin-top: calc(var(--unit) * 3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+.cta-secondary a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.cta-secondary a:hover {
+  color: var(--white);
+}
+
 /* ── FOOTER ── */
 .site-footer {
   position: relative;
@@ -988,11 +1045,36 @@ code {
   margin-bottom: calc(var(--unit) * 5);
 }
 
+.footer-brand .brand {
+  text-decoration: none;
+  color: inherit;
+}
+
 .footer-brand p {
   margin: calc(var(--unit) * 2) 0 0;
   max-width: 260px;
   font-size: 13px;
   color: var(--dim);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--unit) * 1.5) calc(var(--unit) * 3);
+  max-width: 360px;
+}
+
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--white);
 }
 
 .footer-foundation {
@@ -1100,6 +1182,8 @@ code {
 
 @media (max-width: 768px) {
   .site-nav { display: none; }
+  .local-badge { display: none; }
+  .top-bar { padding: 0 calc(var(--unit) * 3); }
 
   .hero-copy {
     top: 220px;
