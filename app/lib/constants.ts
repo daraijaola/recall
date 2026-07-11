@@ -62,10 +62,30 @@ export const MCP_TARGETS: {
   logo: AppLogoId;
   hint: string;
 }[] = [
-  { id: "claude_desktop", label: "Claude Desktop", logo: "claude", hint: "Desktop app" },
-  { id: "claude_code", label: "Claude Code", logo: "claude_code", hint: "Terminal agent" },
-  { id: "cursor", label: "Cursor", logo: "cursor", hint: "IDE" },
-  { id: "windsurf", label: "Windsurf", logo: "windsurf", hint: "IDE" },
+  {
+    id: "claude_desktop",
+    label: "Claude Desktop",
+    logo: "claude",
+    hint: "claude_desktop_config.json",
+  },
+  {
+    id: "claude_code",
+    label: "Claude Code",
+    logo: "claude_code",
+    hint: ".mcp.json · type stdio",
+  },
+  {
+    id: "cursor",
+    label: "Cursor",
+    logo: "cursor",
+    hint: ".cursor/mcp.json",
+  },
+  {
+    id: "windsurf",
+    label: "Windsurf",
+    logo: "windsurf",
+    hint: "mcp_config.json",
+  },
 ];
 
 export const PROJECT_FILES: {
