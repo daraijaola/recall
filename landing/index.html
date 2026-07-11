@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RECALL — Portable AI Memory</title>
+    <meta name="description" content="Import ChatGPT, Claude, Grok, and coding-agent history into one structured, local-first brain — then inject it into every AI you use." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="pixel-grid" aria-hidden="true"></div>
+
+    <header class="top-bar">
+      <a class="brand" href="#top" aria-label="RECALL home">
+        <span class="memory-knot" aria-hidden="true"></span>
+        <span>RECALL</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#fragment">01</a>
+        <a href="#engine">02</a>
+        <a href="#import">03</a>
+        <a href="#structure">04</a>
+        <a href="#proof">05</a>
+        <a href="#inject">06</a>
+      </nav>
+      <span class="local-badge"><i aria-hidden="true"></i> LOCAL-FIRST</span>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="RECALL hero">
+        <canvas class="hero-maze" aria-hidden="true"></canvas>
+        <div class="hero-runner" aria-hidden="true"></div>
+
+        <div class="hero-copy">
+          <p class="eyebrow">PORTABLE AI MEMORY</p>
+          <h1 class="headline">
+            <span>One brain</span>
+            <span>for every AI.</span>
+          </h1>
+          <p class="hero-description">
+            Your AI memory shouldn't die when you switch AIs. Import history, structure it, store it on <code>localhost:6767</code> — inject it everywhere.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#import">IMPORT HISTORY</a>
+            <span class="hero-note"><i aria-hidden="true"></i> ./.supermemory/ ON YOUR MACHINE</span>
+          </div>
+        </div>
+
+        <aside class="scoreboard" aria-label="Product facts">
+          <div class="score-row"><span class="score-key">SRC</span><span class="score-val">06</span></div>
+          <div class="score-row"><span class="score-key">TYP</span><span class="score-val">10</span></div>
+          <div class="score-row"><span class="score-key">RC%</span><span class="score-val">88</span></div>
+          <div class="score-row"><span class="score-key">LK%</span><span class="score-val">00</span></div>
+        </aside>
+      </section>
+
+      <section class="panel" id="fragment" aria-labelledby="fragment-heading">
+        <div class="panel-copy">
+          <p class="section-index">01 / FRAGMENTED CONTEXT</p>
+          <h2 id="fragment-heading">Every AI remembers a different version of you.</h2>
+          <p>
+            Six months of context in ChatGPT. Three months in Claude. Grok knows your latest project. Cursor knows your codebase. Switch tools — you start from zero.
+          </p>
+        </div>
+        <div class="fragment-stage" aria-label="Disconnected AI platforms">
+          <canvas class="fragment-canvas" aria-hidden="true"></canvas>
+          <div class="platform p-chatgpt" data-label="CHATGPT"><img src="./assets/logos/chatgpt.svg" alt="" /></div>
+          <div class="platform p-claude" data-label="CLAUDE"><img src="./assets/logos/claude.svg" alt="" /></div>
+          <div class="platform p-grok" data-label="GROK"><img src="./assets/logos/grok.svg" alt="" /></div>
+          <div class="platform p-claude-code" data-label="CLAUDE CODE"><img src="./assets/logos/claude-code.svg" alt="" /></div>
+          <div class="platform p-cursor" data-label="CURSOR"><img src="./assets/logos/cursor.svg" alt="" /></div>
+          <div class="platform p-codex" data-label="CODEX"><img src="./assets/logos/codex.svg" alt="" /></div>
+        </div>
+      </section>
+
+      <section class="panel" id="engine" aria-labelledby="engine-heading">
+        <div class="panel-copy">
+          <p class="section-index">02 / LOCAL MEMORY ENGINE</p>
+          <h2 id="engine-heading">Your memory needs a home.</h2>
+          <p>
+            One command. Everything local. Embeddings, storage, and hybrid search — without leaving your machine.
+          </p>
+          <pre class="cmd-block" aria-label="Supermemory Local boot"><code>$ npx supermemory local
+
+url       http://localhost:6767
+database  ./.supermemory
+api key   sm_xxxxxxxxxxxxxxxx
+container recall_user</code></pre>
+        </div>
+        <div class="engine-stage" aria-label="Supermemory Local engine">
+          <div class="engine-frame">
+            <span class="engine-corner tl"></span>
+            <span class="engine-corner tr"></span>
+            <span class="engine-corner bl"></span>
+            <span class="engine-corner br"></span>
+            <div class="engine-core">
+              <span class="engine-tag">RECALL MEMORY LAYER</span>
+              <img src="./assets/logos/supermemory.svg" alt="Supermemory" class="engine-logo" />
+              <div class="engine-ops">
+                <span>STORE</span>
+                <span>EMBED</span>
+                <span>HYBRID SEARCH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="import" aria-labelledby="import-heading">
+        <div class="panel-copy">
+          <p class="section-index">03 / IMPORT</p>
+          <h2 id="import-heading">Official exports. Parsed. Deduped.</h2>
+          <p>
+            Drag in your data. Source auto-detects. Re-import updates via <code>customId</code> — never duplicates.
+          </p>
+          <ul class="format-list">
+            <li><span>ChatGPT</span><code>conversations.json</code></li>
+            <li><span>Claude</span><code>conversations.json</code></li>
+            <li><span>Claude Code</span><code>~/.claude/projects/**/*.jsonl</code></li>
+            <li><span>Grok / Cursor</span><code>export JSON</code></li>
+          </ul>
+        </div>
+        <div class="import-stage" aria-label="Import pipeline">
+          <div class="drop-zone">
+            <span class="drop-pellet" aria-hidden="true"></span>
+            <span class="drop-label">DROP EXPORT</span>
+            <span class="drop-sub">conversations.json · jsonl · zip</span>
+          </div>
+          <div class="pipeline">
+            <div class="pipe" data-stage="parse">
+              <span class="pipe-label">PARSE</span>
+              <div class="pipe-track"><span class="pipe-runner"></span></div>
+            </div>
+            <div class="pipe" data-stage="extract">
+              <span class="pipe-label">EXTRACT</span>
+              <div class="pipe-track"><span class="pipe-runner"></span></div>
+            </div>
+            <div class="pipe" data-stage="relate">
+              <span class="pipe-label">RELATE</span>
+              <div class="pipe-track"><span class="pipe-runner"></span></div>
+            </div>
+          </div>
+          <canvas class="import-canvas" aria-hidden="true"></canvas>
+        </div>
+      </section>
+
+      <section class="panel" id="structure" aria-labelledby="structure-heading">
+        <div class="panel-copy">
+          <p class="section-index">04 / STRUCTURE</p>
+          <h2 id="structure-heading">Raw history becomes typed memory.</h2>
+          <p>
+            Preferences, decisions, constraints, goals — extracted, linked in a graph index keyed to Supermemory doc IDs.
+          </p>
+          <p class="benchmark">
+            <span class="bench-label">PREFERENCE RECALL</span>
+            <span class="bench-stat"><strong>88%</strong> structured</span>
+            <span class="bench-vs">vs</span>
+            <span class="bench-stat dim"><strong>70%</strong> raw dump</span>
+            <span class="bench-src">LongMemEval</span>
+          </p>
+        </div>
+        <div class="structure-stage" aria-label="Memory extraction">
+          <div class="thread-block">
+            <span class="block-label">RAW THREAD</span>
+            <p>"Switching the API to TypeScript. Strict mode. Ship by Friday."</p>
+          </div>
+          <div class="pellet-bridge" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="memory-row">
+            <article class="mem-chip" data-type="decision">
+              <span>DECISION</span>
+              <p>API → TypeScript</p>
+            </article>
+            <article class="mem-chip" data-type="preference">
+              <span>PREFERENCE</span>
+              <p>Strict mode on</p>
+            </article>
+            <article class="mem-chip" data-type="constraint">
+              <span>CONSTRAINT</span>
+              <p>Deadline: Friday</p>
+            </article>
+          </div>
+          <div class="relation-row">
+            <span class="rel" data-kind="extends">EXTENDS</span>
+            <span class="rel" data-kind="supports">SUPPORTS</span>
+            <span class="rel" data-kind="updates">UPDATES</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="proof" aria-labelledby="proof-heading">
+        <div class="panel-copy">
+          <p class="section-index">05 / CONTRADICTION</p>
+          <h2 id="proof-heading">Your Claude self disagrees with your ChatGPT self.</h2>
+          <p>
+            Cross-platform conflicts detected at ~0.75 similarity. Newer truth wins. Version chain preserved — never deleted.
+          </p>
+        </div>
+        <div class="proof-stage" aria-label="Contradiction resolution">
+          <article class="mem-block old">
+            <header>
+              <img src="./assets/logos/chatgpt.svg" alt="" />
+              <span>CHATGPT · MARCH</span>
+              <em class="tag tag-dead">SUPERSEDED</em>
+            </header>
+            <p>"I prefer Python for backend work."</p>
+          </article>
+          <div class="conflict-link" aria-hidden="true">
+            <span class="link-pellets"></span>
+            <span class="link-badge">CONTRADICTS</span>
+            <span class="link-pellets"></span>
+          </div>
+          <article class="mem-block new">
+            <header>
+              <img src="./assets/logos/claude.svg" alt="" />
+              <span>CLAUDE · JUNE</span>
+              <em class="tag tag-live">ACTIVE</em>
+            </header>
+            <p>"All-in on TypeScript for the backend."</p>
+          </article>
+          <footer class="chain-bar">
+            <span>RESOLVED</span>
+            <span class="chain">v1 PYTHON <b>→</b> v2 TYPESCRIPT</span>
+          </footer>
+        </div>
+      </section>
+
+      <section class="panel" id="inject" aria-labelledby="inject-heading">
+        <div class="panel-copy">
+          <p class="section-index">06 / INJECT</p>
+          <h2 id="inject-heading">Memory leaves your machine. Context enters every AI.</h2>
+          <p>
+            The missing local MCP. Context packs sized for ChatGPT. Project files generated on demand.
+          </p>
+        </div>
+        <div class="inject-stage" aria-label="Injection surfaces">
+          <article class="inject-row">
+            <span class="inject-num">01</span>
+            <div class="inject-body">
+              <h3>MCP SERVER</h3>
+              <code>recall_search · recall_context · recall_remember · recall_forget</code>
+              <span>Claude Desktop · Claude Code · Cursor · Windsurf</span>
+            </div>
+          </article>
+          <article class="inject-row">
+            <span class="inject-num">02</span>
+            <div class="inject-body">
+              <h3>CONTEXT PACK</h3>
+              <code>compact ~1500ch · full variant</code>
+              <span>ChatGPT · Grok · Gemini</span>
+            </div>
+          </article>
+          <article class="inject-row">
+            <span class="inject-num">03</span>
+            <div class="inject-body">
+              <h3>PROJECT FILES</h3>
+              <code>CLAUDE.md · .cursorrules · AGENTS.md</code>
+              <span>Scoped by project filter</span>
+            </div>
+          </article>
+          <canvas class="inject-canvas" aria-hidden="true"></canvas>
+        </div>
+      </section>
+
+      <section class="cta" id="access" aria-labelledby="cta-heading">
+        <p class="section-index">07 / YOUR MACHINE</p>
+        <h2 id="cta-heading">One brain. Every AI. Your machine.</h2>
+        <p>Built on Supermemory Local. No vendor lock-in. No cloud dependency.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="#import">START IMPORTING</a>
+          <a class="btn btn-ghost" href="https://supermemory.ai/docs/self-hosting/quickstart" target="_blank" rel="noopener">SM LOCAL DOCS</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="brand">
+            <span class="memory-knot" aria-hidden="true"></span>
+            <span>RECALL</span>
+          </div>
+          <p>One local memory for everything you have taught AI.</p>
+        </div>
+        <div class="footer-foundation">
+          <span>BUILT ON</span>
+          <strong>SUPERMEMORY LOCAL</strong>
+          <em>YOUR MACHINE / YOUR DATA</em>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <span>2026 RECALL</span>
+        <span>LOCAL MEMORY · NO LOCK-IN</span>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
