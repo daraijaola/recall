@@ -198,9 +198,13 @@ export function SearchClient() {
 
         {!canSearch ? (
           <div className="search-idle">
-            <p className="search-idle-title">Search across 847 memories</p>
+            <p className="search-idle-title">
+              {health?.memoryCount
+                ? `Search across ${health.memoryCount.toLocaleString()} memories`
+                : "Search your RECALL memory"}
+            </p>
             <p className="muted">
-              Keyword + semantic hybrid — same engine that powers <code className="inline-code">recall_search</code> in MCP.
+              Hybrid search on Supermemory Local — same engine as <code className="inline-code">recall_search</code> in MCP.
             </p>
           </div>
         ) : (
