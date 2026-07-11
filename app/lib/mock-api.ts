@@ -244,39 +244,42 @@ export async function fetchGraph(): Promise<GraphResponse> {
 }
 
 export async function fetchContradictions(): Promise<ContradictionCard[]> {
-  await delay(90);
-  return contradictions.filter((c) => c.status === "open");
+  try {
+    const res = await fetch(API("/api/contradictions?status=open"), { cache: "no-store" });
+    if (!res.ok) throw new Error("contradictions failed");
+    const data = (await res.json()) as ContradictionCard[];
+    return Array.isArray(data) ? data.filter((c) => c.status === "open") : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchAllContradictions(): Promise<ContradictionCard[]> {
-  await delay(90);
-  return [...contradictions].sort((a, b) => {
-    if (a.status !== b.status) return a.status === "open" ? -1 : 1;
-    const aDate = a.resolvedAt ?? a.newMemory.createdAt;
-    const bDate = b.resolvedAt ?? b.newMemory.createdAt;
-    return bDate.localeCompare(aDate);
-  });
+  try {
+    const res = await fetch(API("/api/contradictions?status=all"), { cache: "no-store" });
+    if (!res.ok) throw new Error("contradictions failed");
+    const data = (await res.json()) as ContradictionCard[];
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function resolveContradiction(
   id: string,
   resolution: ConflictResolution,
 ): Promise<ContradictionCard | null> {
-  await delay(200);
-  const card = contradictions.find((c) => c.id === id);
-  if (!card || card.status === "resolved") return null;
-
-  card.status = "resolved";
-  card.resolution = resolution;
-  card.resolvedAt = new Date().toISOString();
-
-  if (resolution === "keep_new") {
-    card.oldMemory.supersededBy = card.newMemory.id;
-  } else if (resolution === "keep_old") {
-    card.newMemory.supersededBy = card.oldMemory.id;
+  try {
+    const res = await fetch(API(`/api/contradictions/${encodeURIComponent(id)}/resolve`), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resolution }),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as ContradictionCard;
+  } catch {
+    return null;
   }
-
-  return { ...card, newMemory: { ...card.newMemory }, oldMemory: { ...card.oldMemory } };
 }
 
 export async function fetchMemoryDetail(id: string): Promise<MemoryDetailResponse | null> {
@@ -597,34 +600,17 @@ export async function searchMemories(
   query: string,
   filters: SearchFilters = {},
 ): Promise<SearchResponse> {
-  const started = Date.now();
-  await delay(120 + Math.random() * 80);
-
-  const terms = tokenize(query);
-  const source = filters.source ?? "all";
-  const type = filters.type ?? "all";
-
-  const pool = nodes.filter((n) => {
-    if (source !== "all" && n.source !== source) return false;
-    if (type !== "all" && n.type !== type) return false;
-    return true;
-  });
-
-  const hits: SearchHit[] = pool
-    .map((memory) => ({
-      memory,
-      score: scoreMemory(memory, terms),
-      snippet: buildSnippet(memory.contentPreview, terms),
-    }))
-    .filter((h) => h.score > 0)
-    .sort((a, b) => b.score - a.score);
-
-  return {
-    query,
-    hits,
-    total: hits.length,
-    tookMs: Date.now() - started,
-  };
+  try {
+    const params = new URLSearchParams();
+    params.set("q", query);
+    if (filters.source && filters.source !== "all") params.set("source", filters.source);
+    if (filters.type && filters.type !== "all") params.set("type", filters.type);
+    const res = await fetch(API(`/api/search?${params.toString()}`), { cache: "no-store" });
+    if (!res.ok) throw new Error("search failed");
+    return (await res.json()) as SearchResponse;
+  } catch {
+    return { query, hits: [], total: 0, tookMs: 0 };
+  }
 }
 
 function delay(ms: number) {

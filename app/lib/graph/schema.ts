@@ -51,4 +51,20 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+-- Contradiction cards (hero demo: cross-platform disagree)
+CREATE TABLE IF NOT EXISTS contradictions (
+  id TEXT PRIMARY KEY,
+  relation_id TEXT NOT NULL,
+  new_memory_id TEXT NOT NULL,
+  old_memory_id TEXT NOT NULL,
+  explanation TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('open', 'resolved')),
+  resolution TEXT,
+  resolved_at TEXT,
+  FOREIGN KEY (new_memory_id) REFERENCES memories(id),
+  FOREIGN KEY (old_memory_id) REFERENCES memories(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_contradictions_status ON contradictions(status);
 `;
