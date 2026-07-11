@@ -1,0 +1,36 @@
+{
+  "name": "recall-mcp",
+  "version": "0.1.0",
+  "description": "RECALL MCP server — portable memory tools over Supermemory Local",
+  "type": "module",
+  "bin": {
+    "recall-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "mcp",
+    "recall",
+    "supermemory",
+    "memory"
+  ],
+  "license": "MIT"
+}
