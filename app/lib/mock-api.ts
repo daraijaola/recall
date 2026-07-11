@@ -199,38 +199,48 @@ export async function fetchHealth(): Promise<HealthResponse> {
 }
 
 export async function fetchStats(): Promise<StatsResponse> {
-  await delay(100);
-  return {
-    total: 847,
-    superseded: 12,
-    expired: 3,
-    contradictions: 1,
-    bySource: {
-      chatgpt: 312,
-      claude: 198,
-      grok: 45,
-      claude_code: 156,
-      cursor: 89,
-      generic: 47,
-    },
-    byType: {
-      preference: 142,
-      decision: 67,
-      fact: 203,
-      goal: 34,
-      constraint: 28,
-      project_state: 56,
-      skill: 89,
-      correction: 41,
-      opinion: 22,
-      workflow: 165,
-    },
-  };
+  try {
+    const res = await fetch(API("/api/stats"), { cache: "no-store" });
+    if (!res.ok) throw new Error("stats failed");
+    return (await res.json()) as StatsResponse;
+  } catch {
+    return {
+      total: 0,
+      superseded: 0,
+      expired: 0,
+      contradictions: 0,
+      bySource: {
+        chatgpt: 0,
+        claude: 0,
+        grok: 0,
+        claude_code: 0,
+        cursor: 0,
+        generic: 0,
+      },
+      byType: {
+        preference: 0,
+        decision: 0,
+        fact: 0,
+        goal: 0,
+        constraint: 0,
+        project_state: 0,
+        skill: 0,
+        correction: 0,
+        opinion: 0,
+        workflow: 0,
+      },
+    };
+  }
 }
 
 export async function fetchGraph(): Promise<GraphResponse> {
-  await delay(120);
-  return { nodes, edges };
+  try {
+    const res = await fetch(API("/api/graph"), { cache: "no-store" });
+    if (!res.ok) throw new Error("graph failed");
+    return (await res.json()) as GraphResponse;
+  } catch {
+    return { nodes: [], edges: [] };
+  }
 }
 
 export async function fetchContradictions(): Promise<ContradictionCard[]> {
@@ -270,32 +280,16 @@ export async function resolveContradiction(
 }
 
 export async function fetchMemoryDetail(id: string): Promise<MemoryDetailResponse | null> {
-  await delay(100);
-  const memory = nodes.find((n) => n.id === id);
-  if (!memory) return null;
-
-  const versionChain =
-    memory.id === "m2"
-      ? [nodes[0], memory]
-      : memory.supersededBy
-        ? [memory]
-        : [memory];
-
-  return {
-    memory,
-    versionChain,
-    relations: edges.filter((e) => e.from === id || e.to === id),
-    sourceConversation: {
-      title:
-        memory.source === "chatgpt"
-          ? "Backend stack discussion"
-          : memory.source === "claude"
-            ? "API architecture planning"
-            : "Session context",
-      source: memory.source,
-      date: memory.validFrom,
-    },
-  };
+  try {
+    const res = await fetch(API(`/api/memories/${encodeURIComponent(id)}`), {
+      cache: "no-store",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error("memory detail failed");
+    return (await res.json()) as MemoryDetailResponse;
+  } catch {
+    return null;
+  }
 }
 
 /** Real import pipeline — multipart upload + polled progress. */

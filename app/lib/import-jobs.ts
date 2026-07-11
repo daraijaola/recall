@@ -11,10 +11,10 @@ import { addDocument } from "./supermemory";
 import {
   ensureDbReady,
   insertImport,
-  insertMemory,
   insertRelation,
   listImports,
   updateImport,
+  upsertMemory,
 } from "./db";
 
 type JobState = ImportProgress & {
@@ -176,7 +176,7 @@ async function runPipeline(
         console.error("[import] SM add failed", e);
       }
 
-      insertMemory({
+      const stableId = upsertMemory({
         id: memId,
         smDocId,
         type: d.type,
@@ -189,7 +189,7 @@ async function runPipeline(
         version: 1,
         createdAt: new Date().toISOString(),
       });
-      memoryIds.push(memId);
+      memoryIds.push(stableId);
       stored += 1;
 
       if (i % 3 === 0 || i === drafts.length - 1) {
@@ -243,28 +243,49 @@ async function runPipeline(
       memoryCount: stored,
     });
 
-    // Chain supports edges within same import for sequential drafts
+    // Chain supports edges within same import for sequential drafts (idempotent ids)
     for (let i = 1; i < memoryIds.length; i++) {
-      if (i > 30) break; // cap edges
-      insertRelation({
-        id: `e_${randomUUID().slice(0, 10)}`,
-        from: memoryIds[i - 1],
-        to: memoryIds[i],
-        kind: "supports",
-      });
+      if (i > 30) break;
+      const from = memoryIds[i - 1];
+      const to = memoryIds[i];
+      if (!from || !to || from === to) continue;
+      try {
+        insertRelation({
+          id: `e_sup_${from.slice(0, 8)}_${to.slice(0, 8)}`,
+          from,
+          to,
+          kind: "supports",
+        });
+      } catch (e) {
+        console.error("[import] relation supports skipped", e);
+      }
     }
 
     // Simple cross keyword contradiction hint (Python vs TypeScript) for demo prep
-    const lower = drafts.map((d, idx) => ({ t: d.content.toLowerCase(), id: memoryIds[idx] }));
-    const py = lower.find((x) => /\bpython\b/.test(x.t) && /\b(prefer|use|backend|stack)\b/.test(x.t));
-    const ts = lower.find((x) => /\btypescript\b|\bts\b/.test(x.t) && /\b(prefer|use|backend|stack|all-?in)\b/.test(x.t));
-    if (py && ts && py.id && ts.id && py.id !== ts.id) {
-      insertRelation({
-        id: `e_contra_${randomUUID().slice(0, 8)}`,
-        from: py.id,
-        to: ts.id,
-        kind: "contradicts",
-      });
+    // Prefer cross-import: scan all graph memories for py vs ts if drafts are single-source
+    try {
+      const { listAllMemories } = await import("./db");
+      const all = listAllMemories();
+      const py = all.find(
+        (x) =>
+          /\bpython\b/i.test(x.contentPreview) &&
+          /\b(prefer|use|backend|stack)\b/i.test(x.contentPreview),
+      );
+      const ts = all.find(
+        (x) =>
+          /\btypescript\b/i.test(x.contentPreview) &&
+          /\b(prefer|use|backend|stack|all-?in|strict)\b/i.test(x.contentPreview),
+      );
+      if (py && ts && py.id !== ts.id) {
+        insertRelation({
+          id: `e_contra_py_ts`,
+          from: py.id,
+          to: ts.id,
+          kind: "contradicts",
+        });
+      }
+    } catch (e) {
+      console.error("[import] contradiction link skipped", e);
     }
 
     setJob(importId, {

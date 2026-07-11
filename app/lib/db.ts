@@ -114,17 +114,29 @@ export type ImportRow = {
   createdAt: string;
 };
 
-export function insertMemory(row: MemoryRow): void {
-  getDb()
-    .prepare(
-      `INSERT OR REPLACE INTO memories
-       (id, sm_doc_id, type, source, content_preview, confidence,
-        valid_from, valid_until, superseded_by, version, created_at)
-       VALUES (@id, @smDocId, @type, @source, @contentPreview, @confidence,
-        @validFrom, @validUntil, @supersededBy, @version, @createdAt)`,
-    )
-    .run({
-      id: row.id,
+/**
+ * Upsert by sm_doc_id so re-imports don't DELETE rows (FK would fail on relations).
+ * Returns the stable memory id (existing or new).
+ */
+export function upsertMemory(row: MemoryRow): string {
+  const db = getDb();
+  const existing = db
+    .prepare("SELECT id FROM memories WHERE sm_doc_id = ?")
+    .get(row.smDocId) as { id: string } | undefined;
+
+  if (existing) {
+    db.prepare(
+      `UPDATE memories SET
+         type = @type,
+         source = @source,
+         content_preview = @contentPreview,
+         confidence = @confidence,
+         valid_from = @validFrom,
+         valid_until = @validUntil,
+         superseded_by = @supersededBy,
+         version = @version
+       WHERE sm_doc_id = @smDocId`,
+    ).run({
       smDocId: row.smDocId,
       type: row.type,
       source: row.source,
@@ -134,17 +146,136 @@ export function insertMemory(row: MemoryRow): void {
       validUntil: row.validUntil,
       supersededBy: row.supersededBy,
       version: row.version,
-      createdAt: row.createdAt,
     });
+    return existing.id;
+  }
+
+  db.prepare(
+    `INSERT INTO memories
+     (id, sm_doc_id, type, source, content_preview, confidence,
+      valid_from, valid_until, superseded_by, version, created_at)
+     VALUES (@id, @smDocId, @type, @source, @contentPreview, @confidence,
+      @validFrom, @validUntil, @supersededBy, @version, @createdAt)`,
+  ).run({
+    id: row.id,
+    smDocId: row.smDocId,
+    type: row.type,
+    source: row.source,
+    contentPreview: row.contentPreview,
+    confidence: row.confidence,
+    validFrom: row.validFrom,
+    validUntil: row.validUntil,
+    supersededBy: row.supersededBy,
+    version: row.version,
+    createdAt: row.createdAt,
+  });
+  return row.id;
+}
+
+/** @deprecated use upsertMemory — kept for call sites that ignore return id */
+export function insertMemory(row: MemoryRow): void {
+  upsertMemory(row);
 }
 
 export function insertRelation(row: RelationRow): void {
   getDb()
     .prepare(
-      `INSERT OR REPLACE INTO relations (id, from_memory, to_memory, kind)
-       VALUES (@id, @from, @to, @kind)`,
+      `INSERT INTO relations (id, from_memory, to_memory, kind)
+       VALUES (@id, @from, @to, @kind)
+       ON CONFLICT(id) DO UPDATE SET
+         from_memory = excluded.from_memory,
+         to_memory = excluded.to_memory,
+         kind = excluded.kind`,
     )
     .run(row);
+}
+
+export function listAllMemories(): MemoryRow[] {
+  return getDb()
+    .prepare(
+      `SELECT id, sm_doc_id as smDocId, type, source,
+              content_preview as contentPreview, confidence,
+              valid_from as validFrom, valid_until as validUntil,
+              superseded_by as supersededBy, version,
+              created_at as createdAt
+       FROM memories
+       ORDER BY created_at DESC`,
+    )
+    .all() as MemoryRow[];
+}
+
+export function getMemoryById(id: string): MemoryRow | null {
+  const row = getDb()
+    .prepare(
+      `SELECT id, sm_doc_id as smDocId, type, source,
+              content_preview as contentPreview, confidence,
+              valid_from as validFrom, valid_until as validUntil,
+              superseded_by as supersededBy, version,
+              created_at as createdAt
+       FROM memories WHERE id = ?`,
+    )
+    .get(id) as MemoryRow | undefined;
+  return row ?? null;
+}
+
+export function listRelations(opts?: { memoryId?: string }): RelationRow[] {
+  if (opts?.memoryId) {
+    return getDb()
+      .prepare(
+        `SELECT id, from_memory as "from", to_memory as "to", kind
+         FROM relations
+         WHERE from_memory = ? OR to_memory = ?`,
+      )
+      .all(opts.memoryId, opts.memoryId) as RelationRow[];
+  }
+  return getDb()
+    .prepare(
+      `SELECT id, from_memory as "from", to_memory as "to", kind FROM relations`,
+    )
+    .all() as RelationRow[];
+}
+
+export function getStatsFromDb(): {
+  total: number;
+  superseded: number;
+  expired: number;
+  contradictions: number;
+  bySource: Record<string, number>;
+  byType: Record<string, number>;
+} {
+  const db = getDb();
+  const total = (db.prepare("SELECT COUNT(*) as c FROM memories").get() as { c: number }).c;
+  const superseded = (
+    db.prepare("SELECT COUNT(*) as c FROM memories WHERE superseded_by IS NOT NULL").get() as {
+      c: number;
+    }
+  ).c;
+  const today = new Date().toISOString().slice(0, 10);
+  const expired = (
+    db
+      .prepare(
+        "SELECT COUNT(*) as c FROM memories WHERE valid_until IS NOT NULL AND valid_until < ?",
+      )
+      .get(today) as { c: number }
+  ).c;
+  const contradictions = (
+    db.prepare("SELECT COUNT(*) as c FROM relations WHERE kind = 'contradicts'").get() as {
+      c: number;
+    }
+  ).c;
+  const bySourceRows = db
+    .prepare("SELECT source, COUNT(*) as c FROM memories GROUP BY source")
+    .all() as Array<{ source: string; c: number }>;
+  const byTypeRows = db
+    .prepare("SELECT type, COUNT(*) as c FROM memories GROUP BY type")
+    .all() as Array<{ type: string; c: number }>;
+
+  const bySource: Record<string, number> = {};
+  for (const r of bySourceRows) bySource[r.source] = r.c;
+  const byType: Record<string, number> = {};
+  for (const r of byTypeRows) byType[r.type] = r.c;
+
+  return { total, superseded, expired, contradictions, bySource, byType };
 }
 
 export function insertImport(row: ImportRow): void {
