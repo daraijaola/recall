@@ -218,6 +218,9 @@ code {
   font-family: var(--mono);
 }
 
+/* After demo: uncomment next line OR delete the scoreboard HTML block */
+/* .demo-stats { display: none !important; } */
+
 .score-row {
   display: grid;
   grid-template-columns: 32px 1fr;
@@ -1218,14 +1221,14 @@ a.inject-row-link {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding-bottom: 8px;
+    padding-bottom: 4px;
   }
 
   .hero-maze {
     position: absolute;
     inset: 0 0 auto 0;
-    height: 42vh;
-    opacity: 0.35;
+    height: 28vh;
+    opacity: 0.25;
     pointer-events: none;
   }
 
@@ -1240,53 +1243,64 @@ a.inject-row-link {
     width: auto !important;
     max-width: none;
     margin: 0;
-    padding: calc(64px + env(safe-area-inset-top, 0px)) calc(var(--unit) * 3) 20px;
+    padding: calc(56px + env(safe-area-inset-top, 0px)) 16px 12px;
     z-index: 2;
   }
 
   .headline {
-    font-size: clamp(40px, 11vw, 56px);
+    font-size: clamp(36px, 10vw, 48px);
     line-height: 0.95;
   }
 
   .hero-description {
-    font-size: 14px;
+    font-size: 13px;
     max-width: none;
+    margin-top: 10px;
   }
 
   .hero-actions {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 14px;
   }
 
   .hero-actions .btn {
     width: 100%;
     justify-content: center;
-    min-height: 48px;
+    min-height: 44px;
   }
 
   .hero-note {
     font-size: 9px;
-    line-height: 1.4;
+    line-height: 1.35;
   }
 
-  .scoreboard {
+  /* Compact demo stats on phone — remove HTML after demo */
+  .scoreboard.demo-stats {
     position: relative;
     left: auto;
     bottom: auto;
-    margin: 0 calc(var(--unit) * 3) calc(var(--unit) * 4);
-    scale: 1;
-    width: calc(100% - calc(var(--unit) * 6));
-    max-width: 280px;
+    margin: 4px 16px 12px;
+    width: auto;
+    max-width: none;
+    padding: 10px 12px;
+    gap: 6px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scoreboard.demo-stats .score-row {
+    grid-template-columns: auto 1fr;
+    gap: 8px;
   }
 
   .panel {
-    padding: calc(var(--unit) * 8) calc(var(--unit) * 3);
+    padding: 40px 16px;
     display: flex;
     flex-direction: column;
-    gap: calc(var(--unit) * 4);
+    gap: 20px;
   }
 
   .panel-copy {
@@ -1406,14 +1420,81 @@ a.inject-row-link {
   }
 }
 
+/* Desktop / laptop — full layout (not mobile-only) */
 @media (min-width: 769px) {
+  .hero {
+    min-height: 100svh;
+    display: block;
+  }
+
+  .hero-maze {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    opacity: 1;
+  }
+
+  .hero-runner {
+    display: block;
+  }
+
+  .hero-copy {
+    position: absolute;
+    top: clamp(240px, 38vh, 320px);
+    left: clamp(400px, 40vw, 540px);
+    width: min(520px, calc(100vw - clamp(400px, 40vw, 540px) - calc(var(--unit) * 6)));
+    padding: 0;
+  }
+
+  .scoreboard.demo-stats {
+    position: absolute;
+    left: calc(var(--unit) * 5);
+    bottom: calc(var(--unit) * 6);
+    display: grid;
+    grid-template-columns: 1fr;
+    width: auto;
+    margin: 0;
+  }
+
+  .site-nav {
+    display: flex;
+  }
+
+  .local-badge {
+    display: inline-flex;
+  }
+
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: auto;
+  }
+
   .hero-actions .btn {
+    width: auto;
     min-height: 44px;
   }
 
   .btn-nav:hover {
     background: var(--white);
     color: var(--black);
+  }
+
+  .panel-cta {
+    flex-direction: row;
+  }
+
+  .panel-cta .btn {
+    width: auto;
+  }
+
+  .cta-actions {
+    flex-direction: row;
+  }
+
+  .cta-actions .btn {
+    width: auto;
   }
 }
 
