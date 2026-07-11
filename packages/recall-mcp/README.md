@@ -1,59 +1,37 @@
 # recall-mcp
 
-MCP server for **RECALL** — portable AI memory on **Supermemory Local**.
+MCP server for **RECALL** — four tools over Supermemory Local.
 
 ## Tools
 
 | Tool | Purpose |
 |------|---------|
-| `recall_search` | Hybrid search over imported memory |
-| `recall_context` | Packed brief (prefs, decisions, project) |
-| `recall_remember` | Store a new durable memory |
+| `recall_search` | Search your memory |
+| `recall_context` | “What am I working on?” brief |
+| `recall_remember` | Save a fact |
 | `recall_forget` | Delete by document id |
 
-## Run (local)
+## Easiest setup
+
+1. Build once:
 
 ```bash
 cd packages/recall-mcp
-npm install
-npm run build
-export RECALL_SM_URL=http://localhost:6767
-export RECALL_SM_API_KEY=sm_...
-export RECALL_CONTAINER=recall_user
-# optional — reuse app context-pack:
-export RECALL_APP_URL=http://127.0.0.1:3020/sites/recall/app
-node dist/index.js
+npm install && npm run build
 ```
 
-## Claude / Cursor config
+2. In the RECALL app → **Connect** → copy the config for your tool  
+   **or** paste this (fix path + key):
 
 ```json
 {
   "mcpServers": {
     "recall": {
       "command": "node",
-      "args": ["/absolute/path/to/recall/packages/recall-mcp/dist/index.js"],
+      "args": ["/FULL/PATH/to/recall/packages/recall-mcp/dist/index.js"],
       "env": {
         "RECALL_SM_URL": "http://localhost:6767",
-        "RECALL_SM_API_KEY": "sm_...",
-        "RECALL_CONTAINER": "recall_user",
-        "RECALL_APP_URL": "http://127.0.0.1:3020/sites/recall/app"
-      }
-    }
-  }
-}
-```
-
-Or after `npm link` globally:
-
-```json
-{
-  "mcpServers": {
-    "recall": {
-      "command": "recall-mcp",
-      "env": {
-        "RECALL_SM_URL": "http://localhost:6767",
-        "RECALL_SM_API_KEY": "sm_...",
+        "RECALL_SM_API_KEY": "sm_your_key",
         "RECALL_CONTAINER": "recall_user"
       }
     }
@@ -61,4 +39,15 @@ Or after `npm link` globally:
 }
 ```
 
-This package does **not** change the Next.js app; it only talks to Supermemory Local (and optionally the app’s context-pack API).
+3. Put that JSON in:
+
+| App | File |
+|-----|------|
+| Claude Desktop | `claude_desktop_config.json` |
+| Claude Code | `.mcp.json` |
+| Cursor | `.cursor/mcp.json` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+
+4. Restart the app · ask: **What am I working on?**
+
+Requires Supermemory Local (`npx supermemory local`).
