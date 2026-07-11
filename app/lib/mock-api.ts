@@ -1,5 +1,6 @@
 import type {
   ConflictResolution,
+  ContextPackResponse,
   ContextPackVariant,
   ContradictionCard,
   GeneratedFileKind,
@@ -458,25 +459,64 @@ Use recall_search and recall_context before assuming user history.
   },
 };
 
-export async function fetchContextPack(variant: ContextPackVariant = "compact") {
-  await delay(100);
-  const content = variant === "compact" ? COMPACT_PACK : FULL_PACK;
-  return {
-    variant,
-    content,
-    charCount: content.length,
-    limit: variant === "compact" ? 1500 : undefined,
-  };
+export async function fetchContextPack(
+  variant: ContextPackVariant = "compact",
+): Promise<ContextPackResponse> {
+  try {
+    const res = await fetch(API(`/api/context-pack?variant=${variant}`), { cache: "no-store" });
+    if (!res.ok) throw new Error("context-pack failed");
+    return (await res.json()) as ContextPackResponse;
+  } catch {
+    return {
+      variant,
+      content: "## RECALL\n- Could not load context pack. Is the app server running?",
+      charCount: 0,
+      limit: variant === "compact" ? 1500 : undefined,
+    };
+  }
 }
 
 export async function fetchMcpConfig(target: McpTargetId): Promise<McpConfigResponse> {
-  await delay(80);
-  return { target, config: mcpJson(target) };
+  try {
+    const res = await fetch(API(`/api/mcp-config?target=${target}`), { cache: "no-store" });
+    if (!res.ok) throw new Error("mcp-config failed");
+    return (await res.json()) as McpConfigResponse;
+  } catch {
+    return {
+      target,
+      config: JSON.stringify(
+        {
+          mcpServers: {
+            recall: {
+              command: "npx",
+              args: ["-y", "recall-mcp"],
+              env: {
+                RECALL_SM_URL: "http://localhost:6767",
+                RECALL_CONTAINER: "recall_user",
+              },
+            },
+          },
+        },
+        null,
+        2,
+      ),
+    };
+  }
 }
 
 export async function fetchGeneratedFile(kind: GeneratedFileKind): Promise<GeneratedFileResponse> {
-  await delay(90);
-  return GENERATED[kind];
+  try {
+    const res = await fetch(API(`/api/generate-file?kind=${kind}`), { cache: "no-store" });
+    if (!res.ok) throw new Error("generate-file failed");
+    return (await res.json()) as GeneratedFileResponse;
+  } catch {
+    const names: Record<GeneratedFileKind, string> = {
+      claude_md: "CLAUDE.md",
+      cursorrules: ".cursorrules",
+      agents_md: "AGENTS.md",
+    };
+    return { kind, filename: names[kind], content: "# RECALL\n\nCould not generate file.\n" };
+  }
 }
 
 function tokenize(query: string): string[] {
