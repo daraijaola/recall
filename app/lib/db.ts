@@ -82,3 +82,119 @@ export function countMemoriesInDb(): number {
     return 0;
   }
 }
+
+export type MemoryRow = {
+  id: string;
+  smDocId: string;
+  type: string;
+  source: string;
+  contentPreview: string;
+  confidence: number;
+  validFrom: string;
+  validUntil: string | null;
+  supersededBy: string | null;
+  version: number;
+  createdAt: string;
+};
+
+export type RelationRow = {
+  id: string;
+  from: string;
+  to: string;
+  kind: string;
+};
+
+export type ImportRow = {
+  id: string;
+  source: string;
+  fileName: string;
+  convCount: number;
+  memoryCount: number;
+  status: "completed" | "failed" | "running";
+  createdAt: string;
+};
+
+export function insertMemory(row: MemoryRow): void {
+  getDb()
+    .prepare(
+      `INSERT OR REPLACE INTO memories
+       (id, sm_doc_id, type, source, content_preview, confidence,
+        valid_from, valid_until, superseded_by, version, created_at)
+       VALUES (@id, @smDocId, @type, @source, @contentPreview, @confidence,
+        @validFrom, @validUntil, @supersededBy, @version, @createdAt)`,
+    )
+    .run({
+      id: row.id,
+      smDocId: row.smDocId,
+      type: row.type,
+      source: row.source,
+      contentPreview: row.contentPreview,
+      confidence: row.confidence,
+      validFrom: row.validFrom,
+      validUntil: row.validUntil,
+      supersededBy: row.supersededBy,
+      version: row.version,
+      createdAt: row.createdAt,
+    });
+}
+
+export function insertRelation(row: RelationRow): void {
+  getDb()
+    .prepare(
+      `INSERT OR REPLACE INTO relations (id, from_memory, to_memory, kind)
+       VALUES (@id, @from, @to, @kind)`,
+    )
+    .run(row);
+}
+
+export function insertImport(row: ImportRow): void {
+  getDb()
+    .prepare(
+      `INSERT OR REPLACE INTO imports
+       (id, source, file_name, conv_count, memory_count, status, created_at)
+       VALUES (@id, @source, @fileName, @convCount, @memoryCount, @status, @createdAt)`,
+    )
+    .run({
+      id: row.id,
+      source: row.source,
+      fileName: row.fileName,
+      convCount: row.convCount,
+      memoryCount: row.memoryCount,
+      status: row.status,
+      createdAt: row.createdAt,
+    });
+}
+
+export function updateImport(
+  id: string,
+  patch: Partial<Pick<ImportRow, "source" | "convCount" | "memoryCount" | "status">>,
+): void {
+  const current = getDb()
+    .prepare(
+      `SELECT id, source, file_name as fileName, conv_count as convCount,
+              memory_count as memoryCount, status, created_at as createdAt
+       FROM imports WHERE id = ?`,
+    )
+    .get(id) as ImportRow | undefined;
+  if (!current) return;
+  insertImport({
+    ...current,
+    source: patch.source ?? current.source,
+    convCount: patch.convCount ?? current.convCount,
+    memoryCount: patch.memoryCount ?? current.memoryCount,
+    status: patch.status ?? current.status,
+  });
+}
+
+export function listImports(): ImportRow[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT id, source, file_name as fileName, conv_count as convCount,
+              memory_count as memoryCount, status, created_at as createdAt
+       FROM imports
+       ORDER BY created_at DESC
+       LIMIT 50`,
+    )
+    .all() as ImportRow[];
+  return rows;
+}

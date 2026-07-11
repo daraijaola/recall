@@ -30,9 +30,9 @@ export function ImportClient() {
     const p = await fetchImportProgress(importId);
     if (!p) return;
     setProgress(p);
-    if (p.stage === "done") {
+    if (p.stage === "done" || p.stage === "error") {
       setActiveImportId(null);
-      refreshHistory();
+      if (p.stage === "done") refreshHistory();
     } else {
       window.setTimeout(() => pollProgress(importId), 400);
     }
@@ -43,10 +43,22 @@ export function ImportClient() {
   }, [activeImportId, pollProgress]);
 
   async function handleFile(file: File) {
-    const { importId } = await startImport(file.name, pickedSource ?? undefined);
-    setActiveImportId(importId);
-    setProgress(null);
-    setPickedSource(null);
+    try {
+      const { importId } = await startImport(file, pickedSource ?? undefined);
+      setActiveImportId(importId);
+      setProgress(null);
+      setPickedSource(null);
+    } catch (e) {
+      setProgress({
+        importId: "error",
+        stage: "error",
+        percent: 100,
+        message: e instanceof Error ? e.message : "Import failed",
+        fileName: file.name,
+        source: pickedSource ?? "chatgpt",
+      });
+      setActiveImportId(null);
+    }
   }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -89,7 +101,7 @@ export function ImportClient() {
           onChange={onFileChange}
         />
 
-        {!isImporting && progress?.stage !== "done" && (
+        {!isImporting && progress?.stage !== "done" && progress?.stage !== "error" && (
           <>
             <button
               type="button"
@@ -127,28 +139,32 @@ export function ImportClient() {
           </>
         )}
 
-        {(isImporting || progress?.stage === "done") && progress && (
+        {(isImporting || progress?.stage === "done" || progress?.stage === "error") && progress && (
           <div className="import-progress-card">
             <div className="import-progress-head">
               <SourceLogo source={progress.source} size={24} showLabel />
               <span className="muted">{progress.fileName}</span>
             </div>
 
-            <div className="progress-steps">
-              {STEPS.map((step, i) => (
-                <div
-                  key={step.key}
-                  className={`progress-step${i < stepIndex ? " done" : ""}${i === stepIndex ? " active" : ""}`}
-                >
-                  <span className="progress-step-dot" />
-                  <span>{step.label}</span>
+            {progress.stage !== "error" && (
+              <>
+                <div className="progress-steps">
+                  {STEPS.map((step, i) => (
+                    <div
+                      key={step.key}
+                      className={`progress-step${i < stepIndex ? " done" : ""}${i === stepIndex ? " active" : ""}`}
+                    >
+                      <span className="progress-step-dot" />
+                      <span>{step.label}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="progress-bar-track">
-              <span className="progress-bar-fill" style={{ width: `${progress.percent}%` }} />
-            </div>
+                <div className="progress-bar-track">
+                  <span className="progress-bar-fill" style={{ width: `${progress.percent}%` }} />
+                </div>
+              </>
+            )}
             <p className="progress-message">{progress.message}</p>
 
             {progress.stage === "done" && (
@@ -168,6 +184,23 @@ export function ImportClient() {
                     }}
                   >
                     Import another
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {progress.stage === "error" && (
+              <div className="import-done">
+                <div className="btn-row">
+                  <button
+                    type="button"
+                    className="btn primary"
+                    onClick={() => {
+                      setProgress(null);
+                      setActiveImportId(null);
+                    }}
+                  >
+                    Try again
                   </button>
                 </div>
               </div>

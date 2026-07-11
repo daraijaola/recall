@@ -1,0 +1,94 @@
+[
+  {
+    "id": "conv_py_backend",
+    "title": "Backend stack discussion",
+    "create_time": 1710400000,
+    "update_time": 1710401000,
+    "current_node": "n3",
+    "mapping": {
+      "n0": {
+        "id": "n0",
+        "parent": null,
+        "message": null
+      },
+      "n1": {
+        "id": "n1",
+        "parent": "n0",
+        "message": {
+          "id": "n1",
+          "author": { "role": "user" },
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "I prefer Python for backend work. Always run typecheck before every commit is not my style — I like fast scripts."
+            ]
+          },
+          "create_time": 1710400000
+        }
+      },
+      "n2": {
+        "id": "n2",
+        "parent": "n1",
+        "message": {
+          "id": "n2",
+          "author": { "role": "assistant" },
+          "content": {
+            "content_type": "text",
+            "parts": ["Python is a solid choice for backends. Flask or FastAPI?"]
+          },
+          "create_time": 1710400100
+        }
+      },
+      "n3": {
+        "id": "n3",
+        "parent": "n2",
+        "message": {
+          "id": "n3",
+          "author": { "role": "user" },
+          "content": {
+            "content_type": "text",
+            "parts": [
+              "My goal is to ship the API by Friday. We decided to use FastAPI for the hackathon project."
+            ]
+          },
+          "create_time": 1710400200
+        }
+      }
+    }
+  },
+  {
+    "id": "conv_next",
+    "title": "Next.js experience",
+    "create_time": 1706800000,
+    "current_node": "m2",
+    "mapping": {
+      "m0": { "id": "m0", "parent": null, "message": null },
+      "m1": {
+        "id": "m1",
+        "parent": "m0",
+        "message": {
+          "id": "m1",
+          "author": { "role": "user" },
+          "content": {
+            "content_type": "text",
+            "parts": ["I'm experienced with Next.js App Router and building RECALL for Supermemory hackathon."]
+          },
+          "create_time": 1706800000
+        }
+      },
+      "m2": {
+        "id": "m2",
+        "parent": "m1",
+        "message": {
+          "id": "m2",
+          "author": { "role": "assistant" },
+          "content": {
+            "content_type": "text",
+            "parts": ["Nice stack for a memory product."]
+          },
+          "create_time": 1706800100
+        }
+      }
+    }
+  }
+]

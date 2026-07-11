@@ -298,116 +298,54 @@ export async function fetchMemoryDetail(id: string): Promise<MemoryDetailRespons
   };
 }
 
-const importHistory: ImportRecord[] = [
-  {
-    id: "imp_1",
-    source: "chatgpt",
-    fileName: "conversations.json",
-    convCount: 142,
-    memoryCount: 312,
-    status: "completed",
-    createdAt: "2026-07-08T14:00:00Z",
-  },
-  {
-    id: "imp_2",
-    source: "claude",
-    fileName: "conversations.json",
-    convCount: 89,
-    memoryCount: 198,
-    status: "completed",
-    createdAt: "2026-07-09T10:30:00Z",
-  },
-];
-
-const activeImports = new Map<string, { started: number; fileName: string; source: Source }>();
-
-function detectSource(fileName: string, hint?: Source): Source {
-  if (hint) return hint;
-  const lower = fileName.toLowerCase();
-  if (lower.includes("claude") && lower.endsWith(".jsonl")) return "claude_code";
-  if (lower.endsWith(".jsonl")) return "claude_code";
-  if (lower.includes("cursor")) return "cursor";
-  if (lower.includes("grok")) return "grok";
-  if (lower.endsWith(".md") || lower.endsWith(".txt")) return "generic";
-  return "chatgpt";
-}
-
+/** Real import pipeline — multipart upload + polled progress. */
 export async function fetchImports(): Promise<ImportRecord[]> {
-  await delay(80);
-  return [...importHistory].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  try {
+    const res = await fetch(API("/api/imports"), { cache: "no-store" });
+    if (!res.ok) throw new Error("imports fetch failed");
+    const data = (await res.json()) as { imports?: ImportRecord[] } | ImportRecord[];
+    if (Array.isArray(data)) return data;
+    return data.imports ?? [];
+  } catch {
+    return [];
+  }
 }
 
-export async function startImport(fileName: string, sourceHint?: Source): Promise<{ importId: string }> {
-  await delay(120);
-  const importId = `imp_${Date.now()}`;
-  const source = detectSource(fileName, sourceHint);
-  activeImports.set(importId, { started: Date.now(), fileName, source });
-  return { importId };
+export async function startImport(
+  file: File | string,
+  sourceHint?: Source,
+): Promise<{ importId: string }> {
+  // Back-compat: string filename alone cannot upload content
+  if (typeof file === "string") {
+    throw new Error("startImport requires a File object (upload content to /api/import)");
+  }
+
+  const form = new FormData();
+  form.append("file", file, file.name);
+  if (sourceHint) form.append("source", sourceHint);
+
+  const res = await fetch(API("/api/import"), {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error || `import failed (${res.status})`);
+  }
+  return (await res.json()) as { importId: string };
 }
 
 export async function fetchImportProgress(importId: string): Promise<ImportProgress | null> {
-  await delay(60);
-  const job = activeImports.get(importId);
-  if (!job) return null;
-
-  const elapsed = Date.now() - job.started;
-  const { fileName, source } = job;
-
-  if (elapsed < 1200) {
-    return {
-      importId,
-      stage: "parsing",
-      percent: Math.min(33, Math.floor((elapsed / 1200) * 33)),
-      message: "Reading conversations from your export…",
-      fileName,
-      source,
-    };
+  try {
+    const res = await fetch(API(`/api/import/${encodeURIComponent(importId)}/progress`), {
+      cache: "no-store",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error("progress fetch failed");
+    return (await res.json()) as ImportProgress;
+  } catch {
+    return null;
   }
-  if (elapsed < 2800) {
-    return {
-      importId,
-      stage: "extracting",
-      percent: 33 + Math.min(34, Math.floor(((elapsed - 1200) / 1600) * 34)),
-      message: "Extracting preferences, decisions, and facts…",
-      fileName,
-      source,
-    };
-  }
-  if (elapsed < 4200) {
-    return {
-      importId,
-      stage: "relating",
-      percent: 67 + Math.min(33, Math.floor(((elapsed - 2800) / 1400) * 33)),
-      message: "Linking memories and checking for conflicts…",
-      fileName,
-      source,
-    };
-  }
-
-  const convCount = source === "chatgpt" ? 24 : source === "claude" ? 18 : 12;
-  const memoryCount = source === "chatgpt" ? 56 : source === "claude" ? 41 : 28;
-
-  importHistory.unshift({
-    id: importId,
-    source,
-    fileName,
-    convCount,
-    memoryCount,
-    status: "completed",
-    createdAt: new Date().toISOString(),
-  });
-  activeImports.delete(importId);
-
-  return {
-    importId,
-    stage: "done",
-    percent: 100,
-    message: `${memoryCount} new memories added`,
-    fileName,
-    source,
-    convCount,
-    memoryCount,
-  };
 }
 
 const COMPACT_PACK = `## Constraints
