@@ -1,110 +1,125 @@
-# Demo video — top-1 script (Supermemory is the star)
+# 3-minute demo — beat MemMesh
 
-**Max 3 minutes.** One video for submit + Discord.
+**Goal:** Judges see **Supermemory Local intelligence** + RECALL’s **product advantages** MemMesh can’t match.
 
-**Open:** https://agentr.online/sites/recall/ → **Open app**
-
-**Fixtures on Desktop:**  
-`sample-chatgpt.json` · `sample-claude.json` (from `app/fixtures/`)
+**Open:** https://agentr.online/sites/recall/ → **Open app**  
+**Desktop:** sample-chatgpt.json + sample-claude.json  
 
 ---
 
-## What you’re selling (memorize this)
+## One sentence
 
-> Supermemory Local is the intelligence: hybrid search, embeddings, profile extraction — on your machine.  
-> RECALL feeds it multi-AI history and injects that same local memory into every AI.
-
-Not “we built a graph app.”  
-Yes “we make Supermemory Local look powerful.”
+> Supermemory Local extracts and retrieves my memory. RECALL imports real ChatGPT/Claude history into that engine and injects it into Cursor, Claude, and ChatGPT.
 
 ---
 
-## Record sequence
+## Timeline (stick to this)
 
-### 0:00 — Hook + engine (25s)
+### 0:00–0:20 Hook
 
-**Landing** then **Setup**
+Landing → Open app → **Setup**
 
 **Say:**  
-“Your memory is fragmented across ChatGPT and Claude. RECALL puts it into **Supermemory Local** — store, embed, hybrid search, profile — on `localhost:6767`.”
+“MemMesh is a CLI multi-agent memory. RECALL is for real developers: import actual chat exports into **Supermemory Local**, then use that same memory in the tools you already use.”
 
-**Show:** Connected · memory count · **SUPERMEMORY LOCAL** badge.
+**Show:** Connected · SUPERMEMORY LOCAL
 
 ---
 
-### 0:25 — Import into the engine (40s)
+### 0:20–0:50 Import (MemMesh can’t do this)
 
-**Import** → drop ChatGPT sample → wait done → drop Claude sample.
+**Import** → ChatGPT sample → Claude sample
 
 **Say:**  
-“Official exports go into Supermemory Local. The engine embeds and indexes them. Watch the document count rise.”
+“Real official exports. Not synthetic agent logs. Straight into Supermemory Local — embed + index on my machine.”
+
+**Show:** progress done → “See Supermemory profile”
 
 ---
 
-### 1:05 — Supermemory intelligence (35s) ★ HERO
+### 0:50–1:25 ★ CENTERPIECE — SM profile
 
-**Home**
+**Home** — full screen on blue **Supermemory intelligence** panel
 
-**Show:** panel **“Supermemory intelligence”** — static profile + dynamic memory lines (TypeScript, deadline, preferences).
+**Say slowly:**  
+“**Supermemory automatically extracted these facts from my old chats.** Static profile and dynamic memory building over time — from the local engine’s profile API. This is not a mock list we typed.”
+
+**Point:** TypeScript, deadline, typecheck, Python preference lines
+
+---
+
+### 1:25–1:50 ★ Hybrid search
+
+**Search** → `What programming language do I prefer?` or `TypeScript backend`
 
 **Say:**  
-“This isn’t mock data. This is Supermemory Local’s own profile API — static and dynamic facts extracted from what we just imported.”
+“Hybrid search — same Supermemory endpoint. Similarity scores. Python and TypeScript both retrieve because the engine understands the topic.”
+
+**Show:** **92%+ sim** + **SM** badge
 
 ---
 
-### 1:40 — Hybrid search (30s) ★ HERO
-
-**Search** → type `TypeScript backend` or `backend language preference`
-
-**Show:** results with **% sim** and **SM** badge · meta “Supermemory hybrid”
-
-**Say:**  
-“Hybrid search on the local engine. Same endpoint MCP uses. Similarity scores from Supermemory — Python and TypeScript both surface because the engine understands the topic.”
-
----
-
-### 2:10 — Conflict (25s)
+### 1:50–2:15 Conflicts (visual win)
 
 **Conflicts**
 
-**Show:** ChatGPT Python vs Claude TypeScript · SM similarity language in the copy
-
 **Say:**  
-“Cross-platform disagreement on the same topic the engine just retrieved. You resolve which version wins.”
+“ChatGPT said Python. Claude said TypeScript. Supermemory hybrid ranks both high on the same query — RECALL makes the contradiction visible and resolvable.”
 
-Click **Use Claude’s version**.
+**Click:** Use Claude’s version  
+**Show:** green resolve toast
 
 ---
 
-### 2:35 — Inject (20s)
+### 2:15–2:45 ★ MCP temporal / cross-tool (MemMesh doesn’t have this)
 
-**Connect** → compact pack + MCP config flash
+**Option A — best:** Cursor or Claude Code with RECALL MCP already configured  
+
+Ask: **“What programming language do I prefer for backend?”**  
 
 **Say:**  
-“Same local memory — paste pack into ChatGPT, or MCP tools into Cursor and Claude Code: `recall_search`, `recall_context`.”
+“Same Supermemory Local memory — now inside my coding agent via MCP. Import once, remember across tools.”
+
+**Option B — if MCP not open:** **Connect**  
+
+**Say:**  
+“One click config for Cursor, Claude Code, Windsurf — tools `recall_search` and `recall_context` hit the same local engine. Plus context packs for ChatGPT.”
+
+Flash compact pack + MCP JSON.
 
 ---
 
-### 2:55 — Close
+### 2:45–3:00 Close
 
 **Say:**  
-“Supermemory Local is the brain. RECALL is how every AI gets it. One machine. No lock-in.”
+“Supermemory Local is the intelligence. RECALL is how real chat history gets in — and how every AI gets it out. Visual, useful, local-first.”
 
 Stop.
 
 ---
 
-## If something fails
+## Why this beats MemMesh in 3 minutes
 
-| Fail | Pivot |
-|------|--------|
-| Profile empty | Search hybrid is enough — spend time there |
-| Conflict empty | Re-import both samples first |
-| MCP not live | Show Connect JSON only |
+| MemMesh | RECALL hammer |
+|---------|----------------|
+| CLI multi-agent purity | Real ChatGPT + Claude **exports** |
+| Less visual | Profile + graph + **Conflicts** on screen |
+| No product MCP story | **MCP in Cursor** or Connect tools |
+| Agent-only loop | Cross-AI: ChatGPT → SM → Cursor |
+
+---
+
+## Prep before record (10 min)
+
+1. Hard refresh app  
+2. Import both samples if profile empty  
+3. Optional: open Cursor with recall-mcp configured  
+4. Confirm Home shows Supermemory panel with lines  
+5. Confirm Search shows SM + % sim  
 
 ---
 
 ## Submit
 
-Form only: https://forms.gle/ARXHNpFY5VNfiNDBA  
-Discord template: [SUBMISSION.md](./SUBMISSION.md)
+https://forms.gle/ARXHNpFY5VNfiNDBA  
+Discord: see SUBMISSION.md  

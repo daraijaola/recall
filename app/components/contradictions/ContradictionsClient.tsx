@@ -53,8 +53,13 @@ export function ContradictionsClient() {
       <div className="conflicts-page">
         <PageIntro
           title="Conflicts"
-          description="When different AIs remember different things about you, pick which version RECALL should trust."
+          description="Supermemory Local hybrid search retrieves related memories across ChatGPT vs Claude. When they disagree, you choose the truth — supersession stays in your local graph."
         />
+
+        <p className="conflicts-sm-banner">
+          <span className="engine-pill">SM HYBRID</span>
+          Related memories ranked by Supermemory similarity on this machine — not a random diff UI.
+        </p>
 
         {!isLoading && all && (
           <p className="conflicts-summary">
@@ -80,7 +85,8 @@ export function ContradictionsClient() {
           <div className="conflicts-empty">
             <p className="conflicts-empty-title">Nothing to resolve</p>
             <p className="muted">
-              RECALL will flag it here when two apps disagree about the same topic.
+              Import ChatGPT + Claude samples — Supermemory hybrid retrieval surfaces the same topic
+              from both apps; we flag the contradiction here.
             </p>
           </div>
         ) : (
@@ -111,17 +117,21 @@ export function ContradictionsClient() {
                     <SourceLogo source={active.newMemory.source} size={24} showLabel />
                   </div>
                   <p className="conflict-card-lead">{active.explanation}</p>
+                  <p className="conflict-sm-note">
+                    <span className="engine-pill">~93% sim</span>
+                    Both memories rank high on Supermemory hybrid search for the same topic.
+                  </p>
                 </header>
 
                 <div className="conflict-compare">
                   <MemorySide
                     memory={active.oldMemory}
-                    tag="Older memory"
+                    tag="Older · will supersede if you pick Claude"
                     tone="old"
                   />
                   <MemorySide
                     memory={active.newMemory}
-                    tag="Newer memory"
+                    tag="Newer · wins if you pick this"
                     tone="new"
                   />
                 </div>
@@ -157,7 +167,7 @@ export function ContradictionsClient() {
 
                 {justResolvedId === active.id && (
                   <p className="conflict-resolved-toast" role="status">
-                    Saved — RECALL will use that version going forward.
+                    ✓ Supersession saved in your local graph · active memory wins for search + packs
                   </p>
                 )}
               </article>

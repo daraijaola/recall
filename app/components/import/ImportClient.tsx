@@ -170,11 +170,21 @@ export function ImportClient() {
             {progress.stage === "done" && (
               <div className="import-done">
                 <p>
-                  <strong>{progress.memoryCount}</strong> memories from{" "}
-                  <strong>{progress.convCount}</strong> conversations
+                  <strong>{progress.memoryCount}</strong> structured rows ·{" "}
+                  <strong>{progress.convCount}</strong> conversations →{" "}
+                  <strong>Supermemory Local</strong>
+                </p>
+                <p className="muted import-done-sm">
+                  The engine is embedding + building static/dynamic profile. Open Home to see
+                  auto-extracted facts.
                 </p>
                 <div className="btn-row">
-                  <Link href="/" className="btn primary">View on Home</Link>
+                  <Link href="/" className="btn primary">
+                    See Supermemory profile
+                  </Link>
+                  <Link href="/search" className="btn ghost">
+                    Hybrid search
+                  </Link>
                   <button
                     type="button"
                     className="btn ghost"

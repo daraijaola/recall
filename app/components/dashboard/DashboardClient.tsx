@@ -83,44 +83,68 @@ export function DashboardClient() {
           </div>
         </header>
 
+        {/* Centerpiece: Supermemory Local auto-extraction — put above everything else */}
         {profile && profile.smConnected && (profile.static.length > 0 || profile.dynamic.length > 0) && (
-          <section className="sm-profile-panel" aria-label="Supermemory Local profile">
+          <section className="sm-profile-panel sm-profile-hero" aria-label="Supermemory Local profile">
+            <div className="sm-profile-kicker">
+              <span className="engine-pill">SUPERMEMORY LOCAL</span>
+              <span className="sm-profile-live">Live on localhost:6767</span>
+            </div>
             <div className="sm-profile-head">
-              <AppLogo id="supermemory" variant="wordmark" size={22} />
+              <AppLogo id="supermemory" variant="wordmark" size={26} />
               <div>
-                <strong>Supermemory intelligence</strong>
+                <strong>Supermemory automatically extracted these facts from your chats</strong>
                 <p className="muted">
-                  Static + dynamic profile from the local engine on{" "}
-                  <code className="inline-code">localhost:6767</code>
-                  {" · "}container <code className="inline-code">{profile.container}</code>
+                  Built-in profile API — static identity + dynamic context. Container{" "}
+                  <code className="inline-code">{profile.container}</code>
+                  {" · "}
+                  not written by hand, not a mock.
                 </p>
               </div>
             </div>
             <div className="sm-profile-cols">
               {profile.static.length > 0 && (
-                <div>
-                  <h3>Static profile</h3>
+                <div className="sm-profile-col">
+                  <h3>Static profile · durable facts</h3>
                   <ul>
-                    {profile.static.slice(0, 6).map((line) => (
+                    {profile.static.slice(0, 8).map((line) => (
                       <li key={line}>{line}</li>
                     ))}
                   </ul>
                 </div>
               )}
               {profile.dynamic.length > 0 && (
-                <div>
-                  <h3>Dynamic memory</h3>
+                <div className="sm-profile-col">
+                  <h3>Dynamic memory · building over time</h3>
                   <ul>
-                    {profile.dynamic.slice(0, 6).map((line) => (
+                    {profile.dynamic.slice(0, 8).map((line) => (
                       <li key={line}>{line}</li>
                     ))}
                   </ul>
                 </div>
               )}
             </div>
-            <p className="sm-profile-foot muted">
-              Extracted by Supermemory Local after import — not a static mock.
+            <div className="sm-profile-actions">
+              <Link href="/search" className="btn primary">
+                Prove it · hybrid search
+              </Link>
+              <Link href="/connect" className="btn ghost">
+                Use in Cursor / Claude
+              </Link>
+            </div>
+          </section>
+        )}
+
+        {profile && profile.smConnected && profile.static.length === 0 && profile.dynamic.length === 0 && (
+          <section className="sm-profile-panel sm-profile-empty">
+            <AppLogo id="supermemory" variant="wordmark" size={22} />
+            <p>
+              <strong>Supermemory Local is connected</strong> — import ChatGPT + Claude history and the
+              engine will auto-extract static + dynamic profile facts here.
             </p>
+            <Link href="/import" className="btn primary">
+              Import history
+            </Link>
           </section>
         )}
 
@@ -132,7 +156,7 @@ export function DashboardClient() {
               <SourceLogo source={conflict.newMemory.source} size={20} />
             </div>
             <div className="conflict-alert-text">
-              <strong>1 conflict needs you</strong>
+              <strong>Cross-app conflict · surfaced via SM hybrid retrieval</strong>
               <span>{conflict.explanation}</span>
             </div>
           </Link>

@@ -301,29 +301,64 @@ a { color: inherit; text-decoration: none; }
 /* ── SUPERMEMORY PROFILE (intelligence layer) ── */
 .sm-profile-panel {
   margin-bottom: 20px;
-  padding: 16px 18px;
-  border: 1px solid rgba(17, 125, 255, 0.35);
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(17, 125, 255, 0.08), rgba(255, 255, 255, 0.03));
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(17, 125, 255, 0.4);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(17, 125, 255, 0.12), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 0 0 1px rgba(17, 125, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.sm-profile-hero {
+  order: -1;
+}
+
+.sm-profile-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sm-profile-live {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #7dffa3;
+}
+
+.sm-profile-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sm-profile-empty p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: 520px;
 }
 
 .sm-profile-head {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .sm-profile-head strong {
   display: block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
+  line-height: 1.35;
 }
 
 .sm-profile-head p {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .sm-profile-cols {
@@ -332,8 +367,15 @@ a { color: inherit; text-decoration: none; }
   gap: 16px;
 }
 
+.sm-profile-col {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.25);
+}
+
 .sm-profile-cols h3 {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
@@ -351,12 +393,72 @@ a { color: inherit; text-decoration: none; }
 }
 
 .sm-profile-cols li {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.sm-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .sm-profile-foot {
   margin: 12px 0 0;
   font-size: 11px;
+}
+
+.conflicts-sm-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(17, 125, 255, 0.3);
+  background: rgba(17, 125, 255, 0.08);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.conflict-sm-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.conflict-card.resolved-flash {
+  animation: resolvePulse 1.2s ease;
+  border-color: rgba(125, 255, 163, 0.55);
+  box-shadow: 0 0 0 1px rgba(125, 255, 163, 0.25);
+}
+
+@keyframes resolvePulse {
+  0% { box-shadow: 0 0 0 0 rgba(125, 255, 163, 0.5); }
+  100% { box-shadow: 0 0 0 12px rgba(125, 255, 163, 0); }
+}
+
+.conflict-resolved-toast {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(125, 255, 163, 0.12);
+  border: 1px solid rgba(125, 255, 163, 0.35);
+  color: #b8ffd0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.import-done-sm {
+  margin: 8px 0 14px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .engine-badge {
