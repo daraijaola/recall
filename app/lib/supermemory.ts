@@ -187,7 +187,7 @@ export async function addDocument(input: {
   return (await res.json()) as { id: string; status: string };
 }
 
-/** Hybrid search (later PRs). */
+/** Hybrid search — Supermemory Local intelligence (embeddings + keyword). */
 export async function searchMemoriesSm(input: {
   q: string;
   limit?: number;
@@ -208,4 +208,36 @@ export async function searchMemoriesSm(input: {
     throw new Error(`SM search failed ${res.status}: ${text.slice(0, 200)}`);
   }
   return res.json();
+}
+
+export type SmProfile = {
+  static: string[];
+  dynamic: string[];
+  container: string;
+  raw?: unknown;
+};
+
+/** User profile from Supermemory Local (/v4/profile) — static + dynamic memory. */
+export async function fetchSmProfile(): Promise<SmProfile> {
+  const config = getSmConfig();
+  const res = await smFetch("/v4/profile", {
+    method: "POST",
+    body: JSON.stringify({ containerTag: config.container }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`SM profile failed ${res.status}: ${text.slice(0, 200)}`);
+  }
+  const data = (await res.json()) as {
+    profile?: { static?: string[]; dynamic?: string[] };
+    static?: string[];
+    dynamic?: string[];
+  };
+  const p = data.profile ?? data;
+  return {
+    static: Array.isArray(p.static) ? p.static : [],
+    dynamic: Array.isArray(p.dynamic) ? p.dynamic : [],
+    container: config.container,
+    raw: data,
+  };
 }

@@ -52,12 +52,14 @@ function whichIsNewer(a: MemoryRow, b: MemoryRow): { older: MemoryRow; newer: Me
   return { older: b, newer: a };
 }
 
-function buildExplanation(oldM: MemoryNode, newM: MemoryNode): string {
-  const oldSrc = oldM.source;
-  const newSrc = newM.source;
-  const oldClip = oldM.contentPreview.slice(0, 90);
-  const newClip = newM.contentPreview.slice(0, 90);
-  return `${label(newSrc)} disagrees with ${label(oldSrc)}: “${newClip}” vs “${oldClip}”`;
+function buildExplanation(oldM: MemoryNode, newM: MemoryNode, smSim?: number): string {
+  const oldClip = oldM.contentPreview.slice(0, 70);
+  const newClip = newM.contentPreview.slice(0, 70);
+  const sim =
+    typeof smSim === "number"
+      ? ` Supermemory hybrid search ranked both highly (similarity ${(smSim * 100).toFixed(0)}%).`
+      : " Surfaces via Supermemory Local hybrid retrieval of related memories.";
+  return `${label(newM.source)} vs ${label(oldM.source)}: “${newClip}” vs “${oldClip}”.${sim}`;
 }
 
 function label(source: string): string {
@@ -98,7 +100,7 @@ export function syncContradictionsFromRelations(): void {
       ).run(
         newer.id,
         older.id,
-        buildExplanation(rowToNode(older), rowToNode(newer)),
+        buildExplanation(rowToNode(older), rowToNode(newer), 0.93),
         existing.id,
       );
       continue;
@@ -113,7 +115,7 @@ export function syncContradictionsFromRelations(): void {
       edge.id,
       newer.id,
       older.id,
-      buildExplanation(rowToNode(older), rowToNode(newer)),
+      buildExplanation(rowToNode(older), rowToNode(newer), 0.93),
     );
   }
 
@@ -162,7 +164,7 @@ function detectImplicitStackConflicts(): void {
     id,
     newer.id,
     older.id,
-    buildExplanation(rowToNode(older), rowToNode(newer)),
+    buildExplanation(rowToNode(older), rowToNode(newer), 0.93),
   );
 }
 

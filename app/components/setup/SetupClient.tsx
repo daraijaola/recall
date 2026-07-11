@@ -63,8 +63,8 @@ container ${setup.container}`
     <AppShell health={health}>
       <div className="setup-page">
         <PageIntro
-          title="Local engine"
-          description="Supermemory Local stores, embeds, and searches your memory on this machine. RECALL plugs into it at localhost:6767."
+          title="Supermemory Local"
+          description="The intelligence layer: store, embed, hybrid search, and profile extraction on your machine at localhost:6767. RECALL is the product UI + inject layer on top."
         />
 
         <section className={`setup-engine${connected ? " live" : ""}`}>
@@ -74,12 +74,13 @@ container ${setup.container}`
           <span className="engine-corner br" aria-hidden="true" />
 
           <div className="setup-engine-core">
-            <span className="setup-engine-tag">RECALL MEMORY LAYER</span>
+            <span className="setup-engine-tag">SUPERMEMORY LOCAL</span>
             <AppLogo id="supermemory" variant="wordmark" size={32} />
             <div className="setup-engine-ops">
               <span>STORE</span>
               <span>EMBED</span>
               <span>HYBRID SEARCH</span>
+              <span>PROFILE</span>
             </div>
 
             <div className="setup-engine-status">

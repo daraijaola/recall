@@ -75,14 +75,18 @@ export function SearchClient() {
     () => (selectedId ? fetchMemoryDetail(selectedId) : null),
   );
 
-  const topScore = results?.hits[0]?.score ?? 0;
-
   const resultLabel = useMemo(() => {
     if (!canSearch) return null;
-    if (isLoading) return "Searching…";
+    if (isLoading) return "Querying Supermemory Local…";
     if (!results) return null;
     if (results.total === 0) return `No matches for “${debouncedQuery}”`;
-    return `${results.total} result${results.total === 1 ? "" : "s"} · ${results.tookMs}ms`;
+    const engine =
+      results.engine === "supermemory-hybrid"
+        ? "Supermemory hybrid"
+        : results.engine === "mixed"
+          ? "SM hybrid + local"
+          : "local index";
+    return `${results.total} hit${results.total === 1 ? "" : "s"} · ${results.tookMs}ms · ${engine}`;
   }, [canSearch, isLoading, results, debouncedQuery]);
 
   function applySuggestion(term: string) {
@@ -102,8 +106,8 @@ export function SearchClient() {
     <AppShell health={health}>
       <div className="search-page">
         <PageIntro
-          title="Search"
-          description="Find anything RECALL knows — across every app you've imported."
+          title="Hybrid search"
+          description="Supermemory Local hybrid engine (embeddings + keyword) on localhost:6767 — the same API powering recall_search."
         />
 
         <div className="search-box">
@@ -204,17 +208,25 @@ export function SearchClient() {
                 : "Search your RECALL memory"}
             </p>
             <p className="muted">
-              Hybrid search on Supermemory Local — same engine as <code className="inline-code">recall_search</code> in MCP.
+              Runs against <code className="inline-code">POST /v4/search</code> with{" "}
+              <code className="inline-code">searchMode: hybrid</code> on Supermemory Local.
             </p>
           </div>
         ) : (
           <>
-            {resultLabel && <p className="search-meta">{resultLabel}</p>}
+            {resultLabel && (
+              <p className="search-meta">
+                {resultLabel}
+                {results?.engine === "supermemory-hybrid" && (
+                  <span className="engine-badge"> SM hybrid</span>
+                )}
+              </p>
+            )}
 
             {results && results.total > 0 && (
               <ul className="search-results">
                 {results.hits.map((hit) => {
-                  const matchPct = topScore > 0 ? Math.round((hit.score / topScore) * 100) : 0;
+                  const simPct = Math.round(hit.score * 100);
                   const expanded = selectedId === hit.memory.id;
 
                   return (
@@ -228,7 +240,12 @@ export function SearchClient() {
                         <div className="search-result-top">
                           <SourceLogo source={hit.memory.source} size={18} showLabel />
                           <span className="type-pill">{TYPE_LABELS[hit.memory.type]}</span>
-                          <span className="search-score">{matchPct}% match</span>
+                          <span className="search-score" title="Supermemory similarity">
+                            {simPct}% sim
+                          </span>
+                          {hit.via === "supermemory-hybrid" && (
+                            <span className="engine-pill">SM</span>
+                          )}
                         </div>
                         <p className="search-result-snippet">
                           <HighlightText text={hit.snippet} query={debouncedQuery} />

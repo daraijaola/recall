@@ -13,6 +13,7 @@ import type {
   McpTargetId,
   MemoryDetailResponse,
   MemoryNode,
+  ProfileResponse,
   RelationEdge,
   SearchFilters,
   SearchHit,
@@ -196,6 +197,22 @@ export async function fetchHealth(): Promise<HealthResponse> {
   } catch (e) {
     // graceful fallback so UI doesn't break while SM is booting
     return { smConnected: false, dbReady: false, memoryCount: 0 };
+  }
+}
+
+/** Supermemory Local profile — static + dynamic facts the engine extracted */
+export async function fetchProfile(): Promise<ProfileResponse> {
+  try {
+    const res = await fetch(API("/api/profile"), { cache: "no-store" });
+    if (!res.ok) throw new Error("profile failed");
+    return (await res.json()) as ProfileResponse;
+  } catch {
+    return {
+      static: [],
+      dynamic: [],
+      container: "recall_user",
+      smConnected: false,
+    };
   }
 }
 

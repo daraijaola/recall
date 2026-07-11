@@ -1,180 +1,110 @@
-# Demo video — baby steps
+# Demo video — top-1 script (Supermemory is the star)
 
-**One video. Max 3 minutes.**  
-Record this and use it for the hackathon + Discord.
+**Max 3 minutes.** One video for submit + Discord.
 
----
+**Open:** https://agentr.online/sites/recall/ → **Open app**
 
-## Before you hit record
-
-### 1. Download the 2 demo files
-
-From the repo (or your PC if you have them):
-
-- `app/fixtures/sample-chatgpt.json`  
-- `app/fixtures/sample-claude.json`  
-
-Put them on your Desktop so you can drag them in.
-
-### 2. Open these tabs
-
-1. **Landing:** https://agentr.online/sites/recall/  
-2. **App:** https://agentr.online/sites/recall/app/  
-3. Hard-refresh the app (`Ctrl+Shift+R`)
-
-### 3. Screen recorder
-
-Loom / OBS / Windows Game Bar — 1080p if you can.
-
-### 4. Optional: reset Conflicts
-
-If Conflicts is empty, Import both samples again first (do this **before** recording).
+**Fixtures on Desktop:**  
+`sample-chatgpt.json` · `sample-claude.json` (from `app/fixtures/`)
 
 ---
 
-## What we built (say this if asked)
+## What you’re selling (memorize this)
 
-| Piece | What it is |
-|-------|------------|
-| **RECALL** | Your app — portable AI memory |
-| **Supermemory Local** | Runs on the machine (`localhost:6767`) — stores + searches memory |
-| **Import** | Reads ChatGPT/Claude export files |
-| **Home** | Graph/list of real memories |
-| **Conflicts** | When two AIs disagree (Python vs TypeScript) |
-| **Connect** | Paste packs + MCP config for other AIs |
-| **recall-mcp** | Tools so Claude Code/Cursor can ask your memory |
+> Supermemory Local is the intelligence: hybrid search, embeddings, profile extraction — on your machine.  
+> RECALL feeds it multi-AI history and injects that same local memory into every AI.
 
-**Story:** Your memory lives on YOUR machine, not locked in ChatGPT or Claude.
+Not “we built a graph app.”  
+Yes “we make Supermemory Local look powerful.”
 
 ---
 
-## Record this exact sequence
+## Record sequence
 
-### Scene 1 — Hook (0:00–0:20)
+### 0:00 — Hook + engine (25s)
 
-**Screen:** Landing page  
-
-**Say (slow):**  
-“Six months of context in ChatGPT. Three months in Claude. Switch tools — you start from zero. Your memory isn’t yours.”
-
-**Then:** Click into the **app** (or open the app tab).
-
----
-
-### Scene 2 — Setup is live (0:20–0:35)
-
-**Click:** **Setup** (nav)  
-
-**Show:** Green **Connected** + memory count  
+**Landing** then **Setup**
 
 **Say:**  
-“RECALL is plugged into Supermemory Local — everything stays on this machine.”
+“Your memory is fragmented across ChatGPT and Claude. RECALL puts it into **Supermemory Local** — store, embed, hybrid search, profile — on `localhost:6767`.”
+
+**Show:** Connected · memory count · **SUPERMEMORY LOCAL** badge.
 
 ---
 
-### Scene 3 — Import ChatGPT (0:35–1:05)
+### 0:25 — Import into the engine (40s)
 
-**Click:** **Import**  
-
-**Do:** Drag `sample-chatgpt.json` onto the drop zone  
-
-**Watch:** Parse → Extract → Link → done  
+**Import** → drop ChatGPT sample → wait done → drop Claude sample.
 
 **Say:**  
-“We import an official ChatGPT export. RECALL parses conversations, extracts memories, and stores them in Supermemory Local.”
+“Official exports go into Supermemory Local. The engine embeds and indexes them. Watch the document count rise.”
 
 ---
 
-### Scene 4 — Import Claude (1:05–1:25)
+### 1:05 — Supermemory intelligence (35s) ★ HERO
 
-**Still on Import**  
+**Home**
 
-**Do:** Drag `sample-claude.json`  
+**Show:** panel **“Supermemory intelligence”** — static profile + dynamic memory lines (TypeScript, deadline, preferences).
 
 **Say:**  
-“Same for Claude. Now both histories live in one brain.”
+“This isn’t mock data. This is Supermemory Local’s own profile API — static and dynamic facts extracted from what we just imported.”
 
 ---
 
-### Scene 5 — Hero conflict (1:25–1:55)
+### 1:40 — Hybrid search (30s) ★ HERO
 
-**Click:** **Conflicts**  
+**Search** → type `TypeScript backend` or `backend language preference`
 
-**Show:** ChatGPT = Python · Claude = TypeScript  
+**Show:** results with **% sim** and **SM** badge · meta “Supermemory hybrid”
 
 **Say:**  
-“Hero moment. You told ChatGPT you prefer Python. Later you went all-in on TypeScript with Claude. RECALL catches that.”
+“Hybrid search on the local engine. Same endpoint MCP uses. Similarity scores from Supermemory — Python and TypeScript both surface because the engine understands the topic.”
 
-**Click:** **Use Claude’s version** (the main blue button)  
+---
+
+### 2:10 — Conflict (25s)
+
+**Conflicts**
+
+**Show:** ChatGPT Python vs Claude TypeScript · SM similarity language in the copy
 
 **Say:**  
-“You choose which version to trust. Graph updates.”
+“Cross-platform disagreement on the same topic the engine just retrieved. You resolve which version wins.”
+
+Click **Use Claude’s version**.
 
 ---
 
-### Scene 6 — Home (1:55–2:15)
+### 2:35 — Inject (20s)
 
-**Click:** **Home**  
-
-**Show:** Real memories (not empty)  
-**Click** one card so the detail panel opens  
+**Connect** → compact pack + MCP config flash
 
 **Say:**  
-“Your portable memory — typed, labeled by source, ready to inject.”
+“Same local memory — paste pack into ChatGPT, or MCP tools into Cursor and Claude Code: `recall_search`, `recall_context`.”
 
 ---
 
-### Scene 7 — Connect / inject (2:15–2:45)
-
-**Click:** **Connect**  
-
-**Do:**  
-1. Toggle **Compact** pack — show the text (deadline, TypeScript, etc.)  
-2. Click **Copy to clipboard**  
-3. Briefly expand **Cursor** or **Claude Code** MCP config  
+### 2:55 — Close
 
 **Say:**  
-“One click: paste this pack into ChatGPT or Grok. For coding agents — MCP tools: search, context, remember, forget.”
+“Supermemory Local is the brain. RECALL is how every AI gets it. One machine. No lock-in.”
+
+Stop.
 
 ---
 
-### Scene 8 — Close (2:45–3:00)
+## If something fails
 
-**Screen:** Landing or Setup “Connected”  
-
-**Say:**  
-“One brain. Every AI. Your machine. Built on Supermemory Local.”
-
-**Stop recording.**
-
----
-
-## After record
-
-1. Upload unlisted YouTube **or** Loom  
-2. Copy the link  
-3. Paste into:
-   - Submission form: https://forms.gle/ARXHNpFY5VNfiNDBA  
-   - Discord #project-showcase (see SUBMISSION.md)  
+| Fail | Pivot |
+|------|--------|
+| Profile empty | Search hybrid is enough — spend time there |
+| Conflict empty | Re-import both samples first |
+| MCP not live | Show Connect JSON only |
 
 ---
 
-## If something breaks mid-demo
+## Submit
 
-| Problem | Fix |
-|---------|-----|
-| Not connected | Skip Setup story; still show Import |
-| Conflict missing | Import both samples again, then Conflicts |
-| MCP not live in Claude | Just **show the JSON** on Connect — enough for judges |
-| App slow | Wait 2s on progress bars; don’t panic |
-
----
-
-## Checklist before you submit the video
-
-- [ ] Under 3 minutes  
-- [ ] Import both files shown  
-- [ ] Conflict shown + resolved  
-- [ ] Connect pack shown  
-- [ ] You said “Supermemory Local” at least once  
-- [ ] Link works when opened in private browser  
+Form only: https://forms.gle/ARXHNpFY5VNfiNDBA  
+Discord template: [SUBMISSION.md](./SUBMISSION.md)

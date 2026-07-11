@@ -1,12 +1,19 @@
 /**
- * Unified search: Supermemory hybrid + local graph index fallback.
- * Returns FE SearchResponse contract exactly.
+ * Search is Supermemory Local hybrid first — RECALL maps results into the UI.
+ * Local graph is fallback only when SM is unreachable.
  */
 
 import { listAllMemories } from "./db";
 import { rowToNode } from "./graph/queries";
 import { searchMemoriesSm } from "./supermemory";
-import type { SearchFilters, SearchHit, SearchResponse } from "./types";
+import type {
+  MemoryNode,
+  MemoryType,
+  SearchFilters,
+  SearchHit,
+  SearchResponse,
+  Source,
+} from "./types";
 
 type SmHit = {
   id?: string;
@@ -18,7 +25,28 @@ type SmHit = {
   documents?: Array<{ id?: string; title?: string }>;
 };
 
-function clipSnippet(text: string, query: string, max = 120): string {
+const SOURCES: Source[] = [
+  "chatgpt",
+  "claude",
+  "grok",
+  "claude_code",
+  "cursor",
+  "generic",
+];
+const TYPES: MemoryType[] = [
+  "preference",
+  "decision",
+  "fact",
+  "goal",
+  "constraint",
+  "project_state",
+  "skill",
+  "correction",
+  "opinion",
+  "workflow",
+];
+
+function clipSnippet(text: string, query: string, max = 140): string {
   const lower = text.toLowerCase();
   const terms = query
     .toLowerCase()
@@ -39,10 +67,37 @@ function clipSnippet(text: string, query: string, max = 120): string {
   return `${prefix}${text.slice(start, end)}${suffix}`;
 }
 
-function localSearch(
-  query: string,
-  filters: SearchFilters,
-): SearchHit[] {
+function asSource(s: unknown): Source {
+  return typeof s === "string" && SOURCES.includes(s as Source) ? (s as Source) : "generic";
+}
+
+function asType(t: unknown): MemoryType {
+  return typeof t === "string" && TYPES.includes(t as MemoryType) ? (t as MemoryType) : "fact";
+}
+
+function smHitToMemory(r: SmHit, i: number): MemoryNode {
+  const meta = r.metadata || {};
+  const text = String(r.memory || r.chunk || "").trim();
+  const id =
+    (typeof meta.recallMemoryId === "string" && meta.recallMemoryId) ||
+    r.id ||
+    `sm_hit_${i}`;
+  return {
+    id,
+    smDocId: r.id || id,
+    type: asType(meta.type),
+    source: asSource(meta.source),
+    contentPreview: text.slice(0, 280),
+    confidence: typeof r.similarity === "number" ? r.similarity : 0.7,
+    validFrom: String(meta.validFrom || new Date().toISOString().slice(0, 10)).slice(0, 10),
+    validUntil: null,
+    supersededBy: null,
+    version: 1,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function localSearch(query: string, filters: SearchFilters): SearchHit[] {
   const terms = query
     .toLowerCase()
     .split(/\s+/)
@@ -52,12 +107,11 @@ function localSearch(
 
   const source = filters.source ?? "all";
   const type = filters.type ?? "all";
-
   const hits: SearchHit[] = [];
+
   for (const row of listAllMemories()) {
     if (source !== "all" && row.source !== source) continue;
     if (type !== "all" && row.type !== type) continue;
-    // Hide superseded by default for cleaner results
     if (row.supersededBy) continue;
 
     const hay = row.contentPreview.toLowerCase();
@@ -67,12 +121,11 @@ function localSearch(
     }
     if (matched === 0) continue;
 
-    const score = matched / terms.length + row.confidence * 0.12;
-    const memory = rowToNode(row);
     hits.push({
-      memory,
-      score: Math.min(0.99, score),
+      memory: rowToNode(row),
+      score: Math.min(0.99, matched / terms.length + row.confidence * 0.12),
       snippet: clipSnippet(row.contentPreview, query),
+      via: "local",
     });
   }
 
@@ -80,7 +133,7 @@ function localSearch(
   return hits;
 }
 
-function mapSmToGraph(
+function mapSmResults(
   smResults: SmHit[],
   filters: SearchFilters,
   query: string,
@@ -90,46 +143,41 @@ function mapSmToGraph(
   const bySm = new Map(all.map((m) => [m.smDocId, m]));
   const source = filters.source ?? "all";
   const type = filters.type ?? "all";
-
   const hits: SearchHit[] = [];
   const seen = new Set<string>();
 
-  for (const r of smResults) {
+  smResults.forEach((r, i) => {
     const meta = r.metadata || {};
     const recallId = typeof meta.recallMemoryId === "string" ? meta.recallMemoryId : null;
     const text = (r.memory || r.chunk || "").trim();
+    if (!text) return;
     const score = typeof r.similarity === "number" ? r.similarity : r.score ?? 0.5;
 
     let row = recallId ? byId.get(recallId) : undefined;
     if (!row && r.id) row = bySm.get(r.id);
-    if (!row && text) {
-      // fuzzy: content contains significant overlap
-      const lower = text.toLowerCase().slice(0, 80);
+    if (!row) {
+      const lower = text.toLowerCase().slice(0, 60);
       row = all.find((m) => {
         const p = m.contentPreview.toLowerCase();
-        return p.includes(lower.slice(0, 40)) || lower.includes(p.slice(0, 40));
+        return p.includes(lower.slice(0, 36)) || lower.includes(p.slice(0, 36));
       });
     }
 
-    // If SM hit is conversation-level only, try source filter match on text search of graph
-    if (!row && text) {
-      const terms = text.toLowerCase().split(/\s+/).filter((t) => t.length > 3).slice(0, 4);
-      row = all.find((m) => terms.some((t) => m.contentPreview.toLowerCase().includes(t)));
-    }
+    // Always surface SM intelligence — synthetic node if not in graph
+    const memory = row ? rowToNode(row) : smHitToMemory(r, i);
+    if (source !== "all" && memory.source !== source) return;
+    if (type !== "all" && memory.type !== type && row) return;
+    if (row?.supersededBy) return;
+    if (seen.has(memory.id)) return;
+    seen.add(memory.id);
 
-    if (!row) continue;
-    if (seen.has(row.id)) continue;
-    if (source !== "all" && row.source !== source) continue;
-    if (type !== "all" && row.type !== type) continue;
-    if (row.supersededBy) continue;
-
-    seen.add(row.id);
     hits.push({
-      memory: rowToNode(row),
+      memory,
       score: Math.min(0.99, Math.max(0.05, score)),
-      snippet: clipSnippet(row.contentPreview || text, query),
+      snippet: clipSnippet(memory.contentPreview || text, query),
+      via: "supermemory-hybrid",
     });
-  }
+  });
 
   hits.sort((a, b) => b.score - a.score);
   return hits;
@@ -142,46 +190,41 @@ export async function searchMemoriesUnified(
   const started = Date.now();
   const q = query.trim();
   if (q.length < 2) {
-    return { query: q, hits: [], total: 0, tookMs: Date.now() - started };
+    return { query: q, hits: [], total: 0, tookMs: 0, engine: "local", smHitCount: 0 };
   }
 
-  let hits: SearchHit[] = [];
+  let smHits: SearchHit[] = [];
+  let smCount = 0;
 
-  // 1) Supermemory hybrid
   try {
     const raw = (await searchMemoriesSm({ q, limit: 20 })) as {
       results?: SmHit[];
-      total?: number;
-      timing?: number;
     };
     const results = raw.results ?? [];
-    hits = mapSmToGraph(results, filters, q);
+    smCount = results.length;
+    smHits = mapSmResults(results, filters, q);
   } catch (e) {
-    console.warn("[search] SM hybrid failed, local only:", e);
+    console.warn("[search] Supermemory hybrid failed:", e);
   }
 
-  // 2) Local graph fill / fallback
+  if (smHits.length > 0) {
+    return {
+      query: q,
+      hits: smHits.slice(0, 40),
+      total: smHits.length,
+      tookMs: Date.now() - started,
+      engine: "supermemory-hybrid",
+      smHitCount: smCount,
+    };
+  }
+
   const local = localSearch(q, filters);
-  if (hits.length === 0) {
-    hits = local;
-  } else {
-    const seen = new Set(hits.map((h) => h.memory.id));
-    for (const h of local) {
-      if (seen.has(h.memory.id)) continue;
-      // only add strong local matches
-      if (h.score >= 0.45) {
-        hits.push(h);
-        seen.add(h.memory.id);
-      }
-    }
-    hits.sort((a, b) => b.score - a.score);
-  }
-
   return {
     query: q,
-    hits: hits.slice(0, 40),
-    total: hits.length,
+    hits: local.slice(0, 40),
+    total: local.length,
     tookMs: Date.now() - started,
+    engine: "local",
+    smHitCount: 0,
   };
 }
-

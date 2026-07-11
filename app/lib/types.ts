@@ -142,6 +142,8 @@ export interface SearchHit {
   memory: MemoryNode;
   score: number;
   snippet: string;
+  /** Present when score came from Supermemory hybrid search */
+  via?: "supermemory-hybrid" | "local";
 }
 
 export interface SearchResponse {
@@ -149,6 +151,17 @@ export interface SearchResponse {
   hits: SearchHit[];
   total: number;
   tookMs: number;
+  /** Which engine produced primary hits */
+  engine?: "supermemory-hybrid" | "local" | "mixed";
+  smHitCount?: number;
+}
+
+/** Supermemory Local /v4/profile — the engine's own intelligence layer */
+export interface ProfileResponse {
+  static: string[];
+  dynamic: string[];
+  container: string;
+  smConnected: boolean;
 }
 
 export interface SetupStatusResponse {
