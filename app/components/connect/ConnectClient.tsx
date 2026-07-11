@@ -49,8 +49,57 @@ export function ConnectClient() {
       <div className="connect-page">
         <PageIntro
           title="Use in other AIs"
-          description="Copy your memory into ChatGPT, Grok, or Gemini in one click. Plug RECALL into Claude, Cursor, and Windsurf via MCP."
+          description="Same Supermemory Local memory — paste packs for chat apps, live MCP tools for coding agents. Import once, remember across tools."
         />
+
+        {/* Temporal / MCP demo centerpiece — what MemMesh CLI cannot show as a product moment */}
+        <section className="mcp-demo-hero" aria-label="MCP cross-tool demo">
+          <div className="mcp-demo-kicker">
+            <span className="engine-pill">MCP · CROSS-TOOL</span>
+            <span className="sm-profile-live">Same memory as Home + Search</span>
+          </div>
+          <h2 className="mcp-demo-title">Prove it in Cursor or Claude Code</h2>
+          <p className="mcp-demo-lead">
+            After importing ChatGPT + Claude history, open your agent with RECALL MCP and ask:
+          </p>
+          <blockquote className="mcp-demo-prompt">
+            What programming language do I prefer for backend?
+          </blockquote>
+          <p className="muted mcp-demo-note">
+            The agent should call <code className="inline-code">recall_search</code> or{" "}
+            <code className="inline-code">recall_context</code> — answers come from Supermemory Local
+            (imported chats), not the agent&apos;s empty context window.
+          </p>
+          <div className="mcp-tools mcp-demo-tools">
+            {MCP_TOOLS.map((t) => (
+              <span key={t} className="mcp-tool-chip">
+                {t}
+              </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="connect-section">
+          <div className="connect-section-head">
+            <div>
+              <h2>Coding agents · MCP first</h2>
+              <p className="muted">
+                One-time setup — <code className="inline-code">npx recall-mcp</code> talks to localhost:6767
+              </p>
+            </div>
+          </div>
+
+          <ul className="connect-list">
+            {MCP_TARGETS.map((target) => (
+              <McpRow
+                key={target.id}
+                target={target}
+                expanded={expandedMcp === target.id}
+                onToggle={() => setExpandedMcp(expandedMcp === target.id ? null : target.id)}
+              />
+            ))}
+          </ul>
+        </section>
 
         <section className="connect-section">
           <div className="connect-section-head">
@@ -106,32 +155,6 @@ export function ConnectClient() {
               </>
             )}
           </div>
-        </section>
-
-        <section className="connect-section">
-          <div className="connect-section-head">
-            <div>
-              <h2>Coding agents</h2>
-              <p className="muted">One-time MCP setup — run <code className="inline-code">npx recall-mcp</code></p>
-            </div>
-          </div>
-
-          <div className="mcp-tools">
-            {MCP_TOOLS.map((t) => (
-              <span key={t} className="mcp-tool-chip">{t}</span>
-            ))}
-          </div>
-
-          <ul className="connect-list">
-            {MCP_TARGETS.map((target) => (
-              <McpRow
-                key={target.id}
-                target={target}
-                expanded={expandedMcp === target.id}
-                onToggle={() => setExpandedMcp(expandedMcp === target.id ? null : target.id)}
-              />
-            ))}
-          </ul>
         </section>
 
         <section className="connect-section">

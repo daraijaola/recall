@@ -48,14 +48,15 @@ Landing → Open app → **Setup**
 
 ---
 
-### 1:25–1:50 ★ Hybrid search
+### 1:25–1:50 ★ Hybrid search (temporal proof)
 
-**Search** → `What programming language do I prefer?` or `TypeScript backend`
+**Search** → click the blue chip **“What programming language do I prefer?”**  
+(or open from Home: *Ask: preferred language?*)
 
 **Say:**  
-“Hybrid search — same Supermemory endpoint. Similarity scores. Python and TypeScript both retrieve because the engine understands the topic.”
+“Same question an agent would ask. Hybrid search on Supermemory Local — similarity scores from my **imported** chats. Python and TypeScript both hit high because the engine understands the topic.”
 
-**Show:** **92%+ sim** + **SM** badge
+**Show:** **92%+ sim** + **SM** badge on results
 
 ---
 

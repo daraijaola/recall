@@ -461,6 +461,185 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.4;
 }
 
+.import-next-steps {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.import-next-steps li {
+  margin: 0;
+}
+
+/* Cross-tool temporal strip (Home) */
+.cross-tool-strip {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.cross-tool-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.cross-tool-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.cross-tool-engine {
+  border-color: rgba(17, 125, 255, 0.5);
+  background: rgba(17, 125, 255, 0.12);
+  color: #9cc7ff;
+  font-weight: 600;
+}
+
+.cross-tool-arrow {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.cross-tool-copy {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 720px;
+}
+
+.cross-tool-copy strong {
+  color: var(--text);
+}
+
+.cross-tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Search SM banner + hot scores */
+.search-sm-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(17, 125, 255, 0.3);
+  background: rgba(17, 125, 255, 0.08);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.search-score-hot {
+  color: #7dffa3 !important;
+  font-weight: 600;
+}
+
+.pill-demo {
+  border-color: rgba(17, 125, 255, 0.55) !important;
+  color: #9cc7ff !important;
+  background: rgba(17, 125, 255, 0.12) !important;
+}
+
+/* Conflicts global toast */
+.conflict-global-toast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(125, 255, 163, 0.4);
+  background: rgba(125, 255, 163, 0.12);
+  color: #b8ffd0;
+  animation: resolvePulse 1.2s ease;
+}
+
+.conflict-global-toast strong {
+  font-size: 14px;
+}
+
+.conflict-global-toast span {
+  font-size: 13px;
+  opacity: 0.92;
+}
+
+/* Connect MCP demo hero */
+.mcp-demo-hero {
+  margin-bottom: 28px;
+  padding: 20px 18px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 125, 255, 0.4);
+  background: linear-gradient(145deg, rgba(17, 125, 255, 0.14), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.mcp-demo-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mcp-demo-title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.mcp-demo-lead {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.mcp-demo-prompt {
+  margin: 0 0 12px;
+  padding: 14px 16px;
+  border-left: 3px solid #117dff;
+  border-radius: 0 8px 8px 0;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.mcp-demo-note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 640px;
+}
+
+.mcp-demo-tools {
+  margin-top: 4px;
+}
+
 .engine-badge {
   margin-left: 8px;
   font-family: var(--font-mono);

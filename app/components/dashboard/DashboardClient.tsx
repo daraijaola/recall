@@ -148,6 +148,44 @@ export function DashboardClient() {
           </section>
         )}
 
+        {/* Temporal / cross-tool proof — MemMesh CLI cannot show this product path */}
+        {profile && profile.smConnected && (profile.static.length > 0 || profile.dynamic.length > 0) && (
+          <section className="cross-tool-strip" aria-label="Memory across tools">
+            <div className="cross-tool-flow">
+              <span className="cross-tool-node">
+                <SourceLogo source="chatgpt" size={16} />
+                ChatGPT
+              </span>
+              <span className="cross-tool-arrow" aria-hidden="true">→</span>
+              <span className="cross-tool-node">
+                <SourceLogo source="claude" size={16} />
+                Claude
+              </span>
+              <span className="cross-tool-arrow" aria-hidden="true">→</span>
+              <span className="cross-tool-node cross-tool-engine">
+                Supermemory Local
+              </span>
+              <span className="cross-tool-arrow" aria-hidden="true">→</span>
+              <span className="cross-tool-node">
+                Cursor / Claude Code
+              </span>
+            </div>
+            <p className="cross-tool-copy">
+              <strong>Still remembers after you close the tab.</strong> Same local store powers hybrid search
+              here and MCP tools (<code className="inline-code">recall_search</code>,{" "}
+              <code className="inline-code">recall_context</code>) in your agents. Import once → use everywhere.
+            </p>
+            <div className="cross-tool-actions">
+              <Link href="/search?q=What%20programming%20language%20do%20I%20prefer%3F" className="btn ghost">
+                Ask: preferred language?
+              </Link>
+              <Link href="/connect" className="btn ghost">
+                MCP setup for Cursor
+              </Link>
+            </div>
+          </section>
+        )}
+
         {conflict && (
           <Link href="/contradictions" className="conflict-alert">
             <div className="conflict-alert-logos">

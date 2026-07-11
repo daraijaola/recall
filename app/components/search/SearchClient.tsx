@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { fetchHealth, fetchMemoryDetail, searchMemories } from "@/lib/mock-api";
 import type { MemoryType, Source } from "@/lib/types";
 import { SEARCH_SUGGESTIONS, SEARCH_TYPE_FILTERS, TYPE_LABELS } from "@/lib/constants";
@@ -48,13 +49,26 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 
 export function SearchClient() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<Source | "all">("all");
   const [typeFilter, setTypeFilter] = useState<MemoryType | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const seeded = useRef(false);
 
   const { data: health } = useSWR("health", fetchHealth);
+
+  // Deep-link from Home temporal strip: /search?q=...
+  useEffect(() => {
+    if (seeded.current) return;
+    const q = searchParams.get("q");
+    if (q && q.trim().length >= 2) {
+      seeded.current = true;
+      setQuery(q.trim());
+      setDebouncedQuery(q.trim());
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 280);
@@ -107,8 +121,13 @@ export function SearchClient() {
       <div className="search-page">
         <PageIntro
           title="Hybrid search"
-          description="Supermemory Local hybrid engine (embeddings + keyword) on localhost:6767 — the same API powering recall_search."
+          description="Supermemory Local hybrid engine (embeddings + keyword) on localhost:6767 — the same API powering recall_search in Cursor."
         />
+
+        <p className="search-sm-banner">
+          <span className="engine-pill">SM HYBRID</span>
+          Results come from imported ChatGPT + Claude history. High similarity = the engine understands the topic — not keyword-only grep.
+        </p>
 
         <div className="search-box">
           <label className="search-label" htmlFor="memory-search">
@@ -120,7 +139,7 @@ export function SearchClient() {
               id="memory-search"
               type="search"
               className="search-input"
-              placeholder="Try “TypeScript”, “deadline”, or “hackathon”"
+              placeholder='Try “What programming language do I prefer?”'
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -142,7 +161,7 @@ export function SearchClient() {
               <button
                 key={term}
                 type="button"
-                className="pill"
+                className={`pill${term.startsWith("What programming") ? " pill-demo" : ""}`}
                 onClick={() => applySuggestion(term)}
               >
                 {term}
@@ -240,11 +259,16 @@ export function SearchClient() {
                         <div className="search-result-top">
                           <SourceLogo source={hit.memory.source} size={18} showLabel />
                           <span className="type-pill">{TYPE_LABELS[hit.memory.type]}</span>
-                          <span className="search-score" title="Supermemory similarity">
+                          <span
+                            className={`search-score${simPct >= 85 ? " search-score-hot" : ""}`}
+                            title="Supermemory hybrid similarity"
+                          >
                             {simPct}% sim
                           </span>
-                          {hit.via === "supermemory-hybrid" && (
-                            <span className="engine-pill">SM</span>
+                          {(hit.via === "supermemory-hybrid" || results?.engine === "supermemory-hybrid") && (
+                            <span className="engine-pill" title="Ranked by Supermemory Local">
+                              SM
+                            </span>
                           )}
                         </div>
                         <p className="search-result-snippet">

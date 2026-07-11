@@ -175,27 +175,39 @@ export function ImportClient() {
                   <strong>Supermemory Local</strong>
                 </p>
                 <p className="muted import-done-sm">
-                  The engine is embedding + building static/dynamic profile. Open Home to see
-                  auto-extracted facts.
+                  Supermemory is embedding + auto-extracting static/dynamic profile facts. Next: see the
+                  profile, prove hybrid search, then use the same memory in Cursor via MCP.
                 </p>
-                <div className="btn-row">
-                  <Link href="/" className="btn primary">
-                    See Supermemory profile
-                  </Link>
-                  <Link href="/search" className="btn ghost">
-                    Hybrid search
-                  </Link>
-                  <button
-                    type="button"
-                    className="btn ghost"
-                    onClick={() => {
-                      setProgress(null);
-                      setActiveImportId(null);
-                    }}
-                  >
-                    Import another
-                  </button>
-                </div>
+                <ol className="import-next-steps">
+                  <li>
+                    <Link href="/" className="btn primary">
+                      1 · See Supermemory profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/search?q=What%20programming%20language%20do%20I%20prefer%3F"
+                      className="btn ghost"
+                    >
+                      2 · Ask preferred language
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/connect" className="btn ghost">
+                      3 · MCP into Cursor
+                    </Link>
+                  </li>
+                </ol>
+                <button
+                  type="button"
+                  className="btn ghost"
+                  onClick={() => {
+                    setProgress(null);
+                    setActiveImportId(null);
+                  }}
+                >
+                  Import another export
+                </button>
               </div>
             )}
 

@@ -28,6 +28,8 @@ export function ContradictionsClient() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(false);
   const [justResolvedId, setJustResolvedId] = useState<string | null>(null);
+  const [lastResolution, setLastResolution] = useState<ConflictResolution | null>(null);
+  const [lastWinnerLabel, setLastWinnerLabel] = useState<string | null>(null);
 
   const open = useMemo(() => all?.filter((c) => c.status === "open") ?? [], [all]);
   const resolved = useMemo(() => all?.filter((c) => c.status === "resolved") ?? [], [all]);
@@ -38,12 +40,22 @@ export function ContradictionsClient() {
   async function handleResolve(resolution: ConflictResolution) {
     if (!active || resolving) return;
     setResolving(true);
+    const older = SOURCE_LABELS[active.oldMemory.source];
+    const newer = SOURCE_LABELS[active.newMemory.source];
+    const winner =
+      resolution === "keep_new" ? newer : resolution === "keep_old" ? older : "Both kept";
     const result = await resolveContradiction(active.id, resolution);
     if (result) {
       setJustResolvedId(active.id);
+      setLastResolution(resolution);
+      setLastWinnerLabel(winner);
       await mutate();
       setSelectedId(null);
-      window.setTimeout(() => setJustResolvedId(null), 2400);
+      window.setTimeout(() => {
+        setJustResolvedId(null);
+        setLastResolution(null);
+        setLastWinnerLabel(null);
+      }, 3200);
     }
     setResolving(false);
   }
@@ -53,13 +65,24 @@ export function ContradictionsClient() {
       <div className="conflicts-page">
         <PageIntro
           title="Conflicts"
-          description="Supermemory Local hybrid search retrieves related memories across ChatGPT vs Claude. When they disagree, you choose the truth — supersession stays in your local graph."
+          description="Supermemory hybrid ranks the same topic from ChatGPT and Claude highly — RECALL makes the contradiction visible and resolvable. You pick truth; supersession stays in the local graph."
         />
 
         <p className="conflicts-sm-banner">
           <span className="engine-pill">SM HYBRID</span>
-          Related memories ranked by Supermemory similarity on this machine — not a random diff UI.
+          Python vs TypeScript? Same query hits both memories at ~93% similarity. Supermemory surfaces related facts; RECALL turns the disagreement into a one-click resolve.
         </p>
+
+        {justResolvedId && lastWinnerLabel && (
+          <div className="conflict-global-toast" role="status">
+            <strong>✓ Conflict resolved</strong>
+            <span>
+              {lastResolution === "keep_both"
+                ? "Both stay active in search + packs."
+                : `${lastWinnerLabel} is now the active truth · other memory superseded in your graph.`}
+            </span>
+          </div>
+        )}
 
         {!isLoading && all && (
           <p className="conflicts-summary">
@@ -109,7 +132,7 @@ export function ContradictionsClient() {
             )}
 
             {active && (
-              <article className={`conflict-card${justResolvedId === active.id ? " resolved-flash" : ""}`}>
+              <article className="conflict-card">
                 <header className="conflict-card-head">
                   <div className="conflict-card-logos">
                     <SourceLogo source={active.oldMemory.source} size={24} showLabel />
@@ -118,20 +141,20 @@ export function ContradictionsClient() {
                   </div>
                   <p className="conflict-card-lead">{active.explanation}</p>
                   <p className="conflict-sm-note">
-                    <span className="engine-pill">~93% sim</span>
-                    Both memories rank high on Supermemory hybrid search for the same topic.
+                    <span className="engine-pill">~93% sim · SM</span>
+                    Both memories rank high on Supermemory hybrid search for the same topic — that&apos;s how the contradiction was found.
                   </p>
                 </header>
 
                 <div className="conflict-compare">
                   <MemorySide
                     memory={active.oldMemory}
-                    tag="Older · will supersede if you pick Claude"
+                    tag={`Older · ${SOURCE_LABELS[active.oldMemory.source]} · pick to keep this truth`}
                     tone="old"
                   />
                   <MemorySide
                     memory={active.newMemory}
-                    tag="Newer · wins if you pick this"
+                    tag={`Newer · ${SOURCE_LABELS[active.newMemory.source]} · pick to keep this truth`}
                     tone="new"
                   />
                 </div>
@@ -164,12 +187,6 @@ export function ContradictionsClient() {
                     Keep both
                   </button>
                 </div>
-
-                {justResolvedId === active.id && (
-                  <p className="conflict-resolved-toast" role="status">
-                    ✓ Supersession saved in your local graph · active memory wins for search + packs
-                  </p>
-                )}
               </article>
             )}
           </section>

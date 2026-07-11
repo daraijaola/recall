@@ -111,12 +111,13 @@ export const SETUP_STEPS = [
 ] as const;
 
 export const SEARCH_SUGGESTIONS = [
+  "What programming language do I prefer?",
   "TypeScript",
+  "Python backend",
   "hackathon",
   "deadline",
-  "workflow",
+  "typecheck",
   "Next.js",
-  "webhook",
 ] as const;
 
 export const SEARCH_TYPE_FILTERS: { id: import("./types").MemoryType | "all"; label: string }[] = [
