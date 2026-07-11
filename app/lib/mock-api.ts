@@ -22,6 +22,11 @@ import type {
   StatsResponse,
 } from "./types";
 
+import { APP_BASE } from "./constants";
+
+// Use the subpath base for API calls (app is served under /sites/recall/app)
+const API = (p: string) => `${APP_BASE}${p.startsWith("/") ? p : "/" + p}`;
+
 const nodes: MemoryNode[] = [
   {
     id: "m1",
@@ -183,8 +188,14 @@ const contradictions: ContradictionCard[] = [
 ];
 
 export async function fetchHealth(): Promise<HealthResponse> {
-  await delay(80);
-  return { smConnected: true, dbReady: true, memoryCount: 847 };
+  try {
+    const res = await fetch(API("/api/health"), { cache: "no-store" });
+    if (!res.ok) throw new Error("health fetch failed");
+    return (await res.json()) as HealthResponse;
+  } catch (e) {
+    // graceful fallback so UI doesn't break while SM is booting
+    return { smConnected: false, dbReady: false, memoryCount: 0 };
+  }
 }
 
 export async function fetchStats(): Promise<StatsResponse> {
@@ -578,42 +589,68 @@ const SETUP_CONFIG = {
 };
 
 export async function fetchSetupStatus(): Promise<SetupStatusResponse> {
-  await delay(100);
-  const health = await fetchHealth();
-  return {
-    connected: health.smConnected,
-    memoryCount: health.memoryCount,
-    ...SETUP_CONFIG,
-  };
+  try {
+    const res = await fetch(API("/api/setup"), { cache: "no-store" });
+    if (!res.ok) throw new Error("setup status fetch failed");
+    return (await res.json()) as SetupStatusResponse;
+  } catch (e) {
+    const health = await fetchHealth();
+    return {
+      connected: health.smConnected,
+      url: "http://localhost:6767",
+      container: "recall_user",
+      databasePath: "./recall.db",
+      apiKey: "",
+      apiKeyMasked: "",
+      version: "local",
+      embeddingModel: "text-embedding-3-small",
+      memoryCount: health.memoryCount,
+      uptime: "up",
+    };
+  }
 }
 
 export async function saveSetupApiKey(apiKey: string): Promise<{ ok: boolean }> {
-  await delay(80);
-  if (!apiKey.trim()) return { ok: false };
-  SETUP_CONFIG.apiKey = apiKey.trim();
-  SETUP_CONFIG.apiKeyMasked = `${apiKey.trim().slice(0, 3)}••••••••••••${apiKey.trim().slice(-2)}`;
-  return { ok: true };
+  try {
+    const res = await fetch(API("/api/setup"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ apiKey }),
+    });
+    if (!res.ok) return { ok: false };
+    const data = await res.json();
+    return { ok: !!data.ok };
+  } catch {
+    return { ok: false };
+  }
 }
 
 export async function testSmConnection(): Promise<SetupTestResponse> {
   const started = Date.now();
-  await delay(80);
-  const health = await fetchHealth();
-  const latencyMs = Date.now() - started;
-
-  if (!health.smConnected) {
+  try {
+    const res = await fetch(API("/api/setup"), { cache: "no-store" });
+    const data = await res.json();
+    const latencyMs = Date.now() - started;
+    if (!data.connected) {
+      return {
+        ok: false,
+        message: "Could not reach Supermemory Local at localhost:6767",
+        latencyMs,
+      };
+    }
+    return {
+      ok: true,
+      message: `Connected · ${data.memoryCount?.toLocaleString?.() ?? 0} memories in ${data.container || "recall_user"}`,
+      latencyMs,
+    };
+  } catch {
+    const latencyMs = Date.now() - started;
     return {
       ok: false,
       message: "Could not reach Supermemory Local at localhost:6767",
       latencyMs,
     };
   }
-
-  return {
-    ok: true,
-    message: `Connected · ${health.memoryCount.toLocaleString()} memories in ${SETUP_CONFIG.container}`,
-    latencyMs,
-  };
 }
 
 export function buildSetupEnv(): string {
