@@ -12,10 +12,12 @@ Import ChatGPT / Claude history → store it on **your machine** with [Supermemo
 
 | Link | What |
 |------|------|
-| https://agentr.online/sites/recall/ | Landing |
-| https://agentr.online/sites/recall/app/ | Live app |
+| https://recall-eight-sage.vercel.app/ | Live (Vercel) |
+| https://recall-eight-sage.vercel.app/app | App |
+| https://agentr.online/sites/recall/ | Backup landing |
 | https://github.com/daraijaola/recall | Source |
 
+**License:** [MIT](./LICENSE)
 ---
 
 ## Local setup (3 commands)
